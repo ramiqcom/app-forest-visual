@@ -77,6 +77,9 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
+          secrets: |-
+            # As an environment variable
+            SERVICE_ACCOUNT_KEY=${{ env.CREDENTIALS }}
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           # NOTE: If required, update to the appropriate source folder
