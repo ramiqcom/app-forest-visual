@@ -10,25 +10,14 @@ import { Option, Options, VisObject } from '../module/type';
 import MapCanvas from './map';
 import Panel from './panel';
 
-export default function App({
-  defaultStates,
-}: {
-  defaultStates: {
-    location: Option;
-    period: Option;
-    layer: Option;
-    vis: VisObject;
-    url: string;
-    bounds: LngLatBoundsLike;
-  };
-}) {
-  const [location, setLocation] = useState<Option>(defaultStates.location);
+export default function App() {
+  const [location, setLocation] = useState<Option>(locations[0]);
   const [periods, setPeriods] = useState<Options>(periodsDict[location.value]);
   const [period, setPeriod] = useState<Option>(periods[0]);
-  const [layer, setLayer] = useState<Option>(defaultStates.layer);
-  const [url, setUrl] = useState(defaultStates.url);
-  const [vis, setVis] = useState(defaultStates.vis);
-  const [bounds, setBounds] = useState(defaultStates.bounds);
+  const [layer, setLayer] = useState<Option>(layers[0]);
+  const [url, setUrl] = useState<string>();
+  const [vis, setVis] = useState<VisObject>();
+  const [bounds, setBounds] = useState<LngLatBoundsLike>();
 
   const states = {
     locations,
