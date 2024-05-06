@@ -7,7 +7,7 @@ export default function Panel() {
   return (
     <div id='panel' className='flexible vertical big-gap'>
       <div className='title'>INNO4CFIs Work Package 4 Output</div>
-
+      
       <div className='flexible vertical gap'>
         <Location />
         <Period />
