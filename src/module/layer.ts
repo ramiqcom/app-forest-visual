@@ -46,7 +46,7 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
 async function stretch(image: ee.Image, bands: string[], palette?: string[]): Promise<VisObject> {
   const geometry: ee.Geometry = image.geometry();
   const percentile: ee.Dictionary = image.select(bands).reduceRegion({
-    scale: 10,
+    scale: 100,
     geometry,
     maxPixels: 1e13,
     reducer: ee.Reducer.percentile([1, 99]),
