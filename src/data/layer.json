@@ -1,0 +1,65 @@
+[
+  {
+    "label": "True Color",
+    "value": "true_color",
+    "bands": ["b1", "b2", "b3"],
+    "type": "multispectral",
+    "collection": "pleaiades"
+  },
+  {
+    "label": "False Color",
+    "value": "false_color",
+    "bands": ["b4", "b1", "b2"],
+    "type": "multispectral",
+    "collection": "pleaiades"
+  },
+  {
+    "label": "NDVI",
+    "value": "ndvi",
+    "bands": ["NDVI"],
+    "type": "indices",
+    "collection": "pleaiades"
+  },
+  {
+    "label": "NDWI",
+    "value": "ndwi",
+    "bands": ["NDWI"],
+    "type": "indices",
+    "collection": "pleaiades"
+  },
+  {
+    "label": "SAVI",
+    "value": "savi",
+    "bands": ["SAVI"],
+    "type": "indices",
+    "collection": "pleaiades"
+  },
+  {
+    "label": "EVI",
+    "value": "evi",
+    "bands": ["EVI"],
+    "type": "indices",
+    "collection": "pleaiades"
+  },
+  {
+    "label": "Canopy Height Model",
+    "value": "chm",
+    "bands": ["CHM"],
+    "type": "indices",
+    "collection": "forest"
+  },
+  {
+    "label": "Tree cover",
+    "value": "treecover",
+    "bands": ["treecover"],
+    "type": "indices",
+    "collection": "forest"
+  },
+  {
+    "label": "Above Ground Biomass",
+    "value": "agb",
+    "bands": ["AGB"],
+    "type": "indices",
+    "collection": "forest"
+  }
+]
