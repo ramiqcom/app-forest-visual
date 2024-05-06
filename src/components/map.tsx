@@ -1,11 +1,10 @@
 import { Map } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect, useState } from 'react';
-import { loadLayer } from '../module/layer';
 import { Context } from '../module/store';
 
 export default function MapCanvas() {
-  const { layer, location, period } = useContext(Context);
+  const { url, bounds } = useContext(Context);
 
   const rasterId = 'image';
   const [map, setMap] = useState<Map>();
@@ -22,12 +21,6 @@ export default function MapCanvas() {
 
     // When the map is mounted load the image
     map.on('load', async () => {
-      const { url, bounds } = await loadLayer({
-        layer: layer.value as string,
-        location: location.value as string,
-        period: period.value as string,
-      });
-
       // Add image source
       map.addSource(rasterId, {
         type: 'raster',
@@ -40,8 +33,8 @@ export default function MapCanvas() {
         type: 'raster',
         source: rasterId,
         id: rasterId,
-        maxzoom: 20,
-        minzoom: 10,
+        maxzoom: 22,
+        minzoom: 8,
       });
 
       // Zooom to the area
