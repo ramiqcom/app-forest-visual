@@ -1,8 +1,8 @@
 import { Map } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect, useState } from 'react';
-import { loadLayer } from '../module/layer';
 import { Context } from '../module/store';
+import { LayerOutput } from '../module/type';
 
 export default function MapCanvas() {
   const { layer, location, period } = useContext(Context);
@@ -22,11 +22,21 @@ export default function MapCanvas() {
 
     // When the map is mounted load the image
     map.on('load', async () => {
-      const { url, bounds } = await loadLayer({
+      const body = {
         layer: layer.value as string,
         location: location.value as string,
         period: period.value as string,
+      };
+
+      const res = await fetch('/layer', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+
+      const { url, vis, bounds, message }: LayerOutput = await res.json();
 
       // Add image source
       map.addSource(rasterId, {

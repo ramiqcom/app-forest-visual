@@ -1,5 +1,3 @@
-'use server';
-
 import ee from '@google/earthengine';
 import { bbox } from '@turf/turf';
 import { LngLatBoundsLike } from 'maplibre-gl';
@@ -14,32 +12,28 @@ import { LayerBody, LayerOutput, VisObject } from './type';
  * @returns
  */
 export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
-  try {
-    const key = process.env.SERVICE_ACCOUNT_KEY;
-    await authenticate(key);
+  const key = process.env.SERVICE_ACCOUNT_KEY;
+  await authenticate(key);
 
-    const { location, period, layer } = body;
+  const { location, period, layer } = body;
 
-    const { collection, bands } = layers.filter((dict) => dict.value == layer)[0];
+  const { collection, bands } = layers.filter((dict) => dict.value == layer)[0];
 
-    let image: ee.Image = ee
-      .ImageCollection(collections[collection])
-      .filter(ee.Filter.and(ee.Filter.eq('location', location), ee.Filter.date(period)))
-      .first();
+  let image: ee.Image = ee
+    .ImageCollection(collections[collection])
+    .filter(ee.Filter.and(ee.Filter.eq('location', location), ee.Filter.date(period)))
+    .first();
 
-    const mask: ee.Image = image.reduce(ee.Reducer.anyNonZero());
+  const mask: ee.Image = image.reduce(ee.Reducer.anyNonZero());
 
-    image = image.updateMask(mask);
+  image = image.updateMask(mask);
 
-    const vis = await stretch(image, bands);
+  const vis = await stretch(image, bands);
 
-    const { urlFormat } = await getMapId(image, vis);
+  const { urlFormat } = await getMapId(image, vis);
 
-    const bounds = bbox(await evaluate(image.geometry())) as LngLatBoundsLike;
-    return { url: urlFormat, vis, ok: true, bounds };
-  } catch ({ message }) {
-    return { message, ok: false };
-  }
+  const bounds = bbox(await evaluate(image.geometry())) as LngLatBoundsLike;
+  return { url: urlFormat, vis, bounds };
 }
 
 /**
