@@ -79,7 +79,7 @@ jobs:
         with:
           secrets: |-
             # As an environment variable
-            SERVICE_ACCOUNT_KEY=${{ env.CREDENTIALS }}
+            SERVICE_ACCOUNT_KEY=${{ env.CREDENTIALS }}:latesh
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           # NOTE: If required, update to the appropriate source folder
