@@ -3,6 +3,8 @@
     "label": "True Color",
     "value": "true_color",
     "bands": ["b1", "b2", "b3"],
+    "formula": null,
+    "palette": null,
     "type": "multispectral",
     "collection": "pleaiades"
   },
@@ -10,6 +12,8 @@
     "label": "False Color",
     "value": "false_color",
     "bands": ["b4", "b1", "b2"],
+    "formula": null,
+    "palette": null,
     "type": "multispectral",
     "collection": "pleaiades"
   },
@@ -18,12 +22,16 @@
     "value": "ndvi",
     "bands": ["NDVI"],
     "type": "indices",
+    "formula": "NDVI = (NIR - RED) / (NIR + RED)",
+    "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
     "collection": "pleaiades"
   },
   {
     "label": "NDWI",
     "value": "ndwi",
     "bands": ["NDWI"],
+    "formula": "NDWI = (GREEN - NIR) / (GREEN + NIR)",
+    "palette": ["red", "orange", "white", "lightskyblue", "blue"],
     "type": "indices",
     "collection": "pleaiades"
   },
@@ -31,6 +39,8 @@
     "label": "SAVI",
     "value": "savi",
     "bands": ["SAVI"],
+    "formula": "SAVI = (NIR - RED) * 1.5 / (NIR + RED + 0.5)",
+    "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
     "type": "indices",
     "collection": "pleaiades"
   },
@@ -38,6 +48,8 @@
     "label": "EVI",
     "value": "evi",
     "bands": ["EVI"],
+    "formula": "EVI = (NIR - RED) * 2.5 / (NIR + 6 * RED - 7 * BLUE + 1)",
+    "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
     "type": "indices",
     "collection": "pleaiades"
   },
@@ -45,6 +57,8 @@
     "label": "Canopy Height Model",
     "value": "chm",
     "bands": ["CHM"],
+    "formula": null,
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
     "type": "indices",
     "collection": "forest"
   },
@@ -52,6 +66,8 @@
     "label": "Tree cover",
     "value": "treecover",
     "bands": ["treecover"],
+    "formula": null,
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
     "type": "indices",
     "collection": "forest"
   },
@@ -59,6 +75,8 @@
     "label": "Above Ground Biomass",
     "value": "agb",
     "bands": ["AGB"],
+    "formula": null,
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
     "type": "indices",
     "collection": "forest"
   }

@@ -1,6 +1,7 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import periodsDict from '../data/period.json';
 import { Context } from '../module/store';
+import { LayerOutput } from '../module/type';
 import { Select } from './input';
 
 export default function Panel() {
@@ -62,9 +63,55 @@ function Layer() {
 }
 
 function ShowLayer() {
+  const { location, layer, period, setUrl, setBounds } = useContext(Context);
+
+  const [status, setStatus] = useState<string>(undefined);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   return (
-    <div className='flexible vertical'>
-      <button>Show Layer</button>
+    <div className='flexible vertical gap'>
+      <button
+        disabled={buttonDisabled}
+        onClick={async () => {
+          try {
+            setButtonDisabled(true);
+            setStatus('Generating image...');
+
+            const body = {
+              layer: layer.value,
+              location: location.value,
+              period: period.value,
+            };
+
+            const res = await fetch('/layer', {
+              method: 'POST',
+              body: JSON.stringify(body),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            const { url, bounds, message }: LayerOutput = await res.json();
+
+            if (!res.ok) {
+              throw new Error(message);
+            }
+
+            setUrl(url);
+            setBounds(bounds);
+
+            setStatus('Success');
+          } catch ({ message }) {
+            setStatus(message);
+          } finally {
+            setButtonDisabled(false);
+          }
+        }}
+      >
+        Show Layer
+      </button>
+
+      <div className='status'>{status}</div>
     </div>
   );
 }

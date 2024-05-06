@@ -17,18 +17,49 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
 
   const { location, period, layer } = body;
 
-  const { collection, bands } = layers.filter((dict) => dict.value == layer)[0];
+  // Layer
+  const filterLayer = layers.filter((dict) => dict.value == layer);
 
+  // Check layer
+  if (!filterLayer.length) {
+    throw new Error(`Layer ${layer} is not available`);
+  }
+
+  // Layer data
+  const { collection, bands, type, formula, palette } = filterLayer[0];
+
+  // Collection id
+  const colId = collections[collection];
+
+  // Check collection id
+  if (!colId) {
+    throw new Error(`Collection ${colId} is not available`);
+  }
+
+  // Filter and get image
   let image: ee.Image = ee
-    .ImageCollection(collections[collection])
+    .ImageCollection(colId)
     .filter(ee.Filter.and(ee.Filter.eq('location', location), ee.Filter.date(period)))
     .first();
+
+  if (collection == 'pleaiades') {
+    image = image.divide(10000);
+  }
 
   const mask: ee.Image = image.reduce(ee.Reducer.anyNonZero());
 
   image = image.updateMask(mask);
 
-  const vis = await stretch(image, bands);
+  if (type == 'indices' && collection == 'pleaiades') {
+    image = image.expression(formula, {
+      NIR: image.select('b4'),
+      RED: image.select('b1'),
+      GREEN: image.select('b2'),
+      BLUE: image.select('b3'),
+    });
+  }
+
+  const vis = await stretch(image, bands, type == 'indices' ? palette : null);
 
   const { urlFormat } = await getMapId(image, vis);
 
@@ -46,7 +77,7 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
 async function stretch(image: ee.Image, bands: string[], palette?: string[]): Promise<VisObject> {
   const geometry: ee.Geometry = image.geometry();
   const percentile: ee.Dictionary = image.select(bands).reduceRegion({
-    scale: 100,
+    scale: 10,
     geometry,
     maxPixels: 1e13,
     reducer: ee.Reducer.percentile([1, 99]),
