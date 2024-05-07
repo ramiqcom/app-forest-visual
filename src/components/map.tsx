@@ -3,12 +3,14 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect, useState } from 'react';
 import { Context } from '../module/store';
 import { LayerOutput } from '../module/type';
+import Loading from './loading';
 
 export default function MapCanvas() {
   const { layer, location, period, url, bounds } = useContext(Context);
 
   const rasterId = 'image';
   const [map, setMap] = useState<Map>();
+  const [loading, setLoading] = useState(true);
   const mapDiv = 'map';
   const keyStadia = process.env.NEXT_PUBLIC_STADIA_KEY;
   const style = `https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json?api_key=${keyStadia}`;
@@ -56,6 +58,9 @@ export default function MapCanvas() {
 
       // Zooom to the area
       map.fitBounds(bounds);
+
+      // Show the map
+      setLoading(false);
     });
   }, []);
 
@@ -63,10 +68,14 @@ export default function MapCanvas() {
     if (url && bounds) {
       const source = map.getSource(rasterId) as RasterTileSource;
       source.setTiles([url]);
-
       map.fitBounds(bounds);
     }
   }, [url, bounds]);
 
-  return <div id={mapDiv}></div>;
+  return (
+    <div className='flexible vertical' style={{ width: '100%' }}>
+      {loading ? <Loading /> : null}
+      <div id={mapDiv} style={{ visibility: loading ? 'hidden' : 'visible' }}></div>
+    </div>
+  );
 }
