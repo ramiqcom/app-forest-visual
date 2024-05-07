@@ -39,16 +39,14 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
   // Filter and get image
   let image: ee.Image = ee
     .ImageCollection(colId)
-    .filter(ee.Filter.and(ee.Filter.eq('location', location), ee.Filter.date(period)))
+    .filter(ee.Filter.and(ee.Filter.eq('location', location), ee.Filter.eq('period', period)))
     .first();
 
   if (collection == 'pleaiades') {
     image = image.divide(10000);
+    const mask: ee.Image = image.reduce(ee.Reducer.anyNonZero());
+    image = image.updateMask(mask);
   }
-
-  const mask: ee.Image = image.reduce(ee.Reducer.anyNonZero());
-
-  image = image.updateMask(mask);
 
   if (type == 'indices' && collection == 'pleaiades') {
     image = image.expression(formula, {
