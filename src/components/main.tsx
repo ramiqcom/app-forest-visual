@@ -20,6 +20,8 @@ export default function App({ image }) {
   const [vis, setVis] = useState<VisObject>();
   const [bounds, setBounds] = useState<LngLatBoundsLike>();
   const [loading, setLoading] = useState(true);
+  const [showPlot, setShowPlot] = useState(true);
+  const [showImage, setShowImage] = useState(true);
 
   const states = {
     locations,
@@ -40,6 +42,10 @@ export default function App({ image }) {
     setBounds,
     loading,
     setLoading,
+    showPlot,
+    setShowPlot,
+    showImage,
+    setShowImage,
   };
 
   return (

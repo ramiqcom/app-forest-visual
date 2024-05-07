@@ -39,6 +39,10 @@ export type GlobalContext = {
   setBounds: setBounds;
   loading: boolean;
   setLoading: setBoolean;
+  showPlot: boolean;
+  setShowPlot: setBoolean;
+  showImage: boolean;
+  setShowImage: setBoolean;
 };
 
 export type LayerBody = {
@@ -52,7 +56,6 @@ export type LayerOutput = {
   message?: string;
   ok?: boolean;
   vis?: VisObject;
-  bounds?: LngLatBoundsLike;
 };
 
 export type MapId = {

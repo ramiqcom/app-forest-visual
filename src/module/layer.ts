@@ -1,6 +1,4 @@
 import ee from '@google/earthengine';
-import { bbox } from '@turf/turf';
-import { LngLatBoundsLike } from 'maplibre-gl';
 import collections from '../data/collection.json';
 import layers from '../data/layer.json';
 import { authenticate, evaluate, getMapId } from './ee';
@@ -61,8 +59,7 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
 
   const { urlFormat } = await getMapId(image, vis);
 
-  const bounds = bbox(await evaluate(image.geometry())) as LngLatBoundsLike;
-  return { url: urlFormat, vis, bounds };
+  return { url: urlFormat, vis };
 }
 
 /**

@@ -20,22 +20,31 @@ export default function Panel() {
 }
 
 function Location() {
-  const { locations, location, setLocation, setPeriods, setPeriod } = useContext(Context);
+  const { locations, location, setLocation, setPeriods, setPeriod, showPlot, setShowPlot } =
+    useContext(Context);
 
   return (
     <div className='flexible vertical'>
       Select a location
-      <Select
-        options={locations}
-        value={location}
-        onChange={(value) => {
-          setLocation(value);
+      <div className='flexible'>
+        <input
+          type='checkbox'
+          style={{ width: '10%' }}
+          checked={showPlot}
+          onChange={(e) => setShowPlot(e.target.checked)}
+        />
+        <Select
+          options={locations}
+          value={location}
+          onChange={(value) => {
+            setLocation(value);
 
-          const periods = periodsDict[value.value];
-          setPeriods(periods);
-          setPeriod(periods[0]);
-        }}
-      />
+            const periods = periodsDict[value.value];
+            setPeriods(periods);
+            setPeriod(periods[0]);
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -52,12 +61,20 @@ function Period() {
 }
 
 function Layer() {
-  const { layers, layer, setLayer } = useContext(Context);
+  const { layers, layer, setLayer, showImage, setShowImage } = useContext(Context);
 
   return (
     <div className='flexible vertical'>
       Select layer type
-      <Select options={layers} value={layer} onChange={(value) => setLayer(value)} />
+      <div className='flexible'>
+        <input
+          type='checkbox'
+          style={{ width: '10%' }}
+          checked={showImage}
+          onChange={(e) => setShowImage(e.target.checked)}
+        />
+        <Select options={layers} value={layer} onChange={(value) => setLayer(value)} />
+      </div>
     </div>
   );
 }
@@ -91,14 +108,13 @@ function ShowLayer() {
               },
             });
 
-            const { url, bounds, message }: LayerOutput = await res.json();
+            const { url, message }: LayerOutput = await res.json();
 
             if (!res.ok) {
               throw new Error(message);
             }
 
             setUrl(url);
-            setBounds(bounds);
 
             setStatus('Success');
           } catch ({ message }) {
