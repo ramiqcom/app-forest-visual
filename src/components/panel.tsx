@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import layers from '../data/layer.json';
 import periodsDict from '../data/period.json';
 import { Context } from '../module/store';
 import { LayerOutput } from '../module/type';
@@ -80,7 +81,7 @@ function Layer() {
 }
 
 function ShowLayer() {
-  const { location, layer, period, setUrl, setBounds } = useContext(Context);
+  const { location, layer, period, setUrl, setVis } = useContext(Context);
 
   const [status, setStatus] = useState<string>(undefined);
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -108,13 +109,19 @@ function ShowLayer() {
               },
             });
 
-            const { url, message }: LayerOutput = await res.json();
+            const { url, message, vis }: LayerOutput = await res.json();
 
             if (!res.ok) {
               throw new Error(message);
             }
 
             setUrl(url);
+
+            // Set visualization
+            // Set visualization
+            vis.name = layer.label;
+            vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+            setVis(vis);
 
             setStatus('Success');
           } catch ({ message }) {

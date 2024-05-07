@@ -2,20 +2,22 @@
   {
     "label": "True Color",
     "value": "true_color",
-    "bands": ["b1", "b2", "b3"],
+    "bands": ["RED", "GREEN", "BLUE"],
     "formula": null,
     "palette": null,
     "type": "multispectral",
-    "collection": "pleaiades"
+    "collection": "pleaiades",
+    "unit": null
   },
   {
     "label": "False Color",
     "value": "false_color",
-    "bands": ["b4", "b1", "b2"],
+    "bands": ["NIR", "RED", "GREEN"],
     "formula": null,
     "palette": null,
     "type": "multispectral",
-    "collection": "pleaiades"
+    "collection": "pleaiades",
+    "unit": null
   },
   {
     "label": "NDVI",
@@ -24,7 +26,8 @@
     "type": "indices",
     "formula": "NDVI = (NIR - RED) / (NIR + RED)",
     "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
-    "collection": "pleaiades"
+    "collection": "pleaiades",
+    "unit": null
   },
   {
     "label": "NDWI",
@@ -33,7 +36,8 @@
     "formula": "NDWI = (GREEN - NIR) / (GREEN + NIR)",
     "palette": ["red", "orange", "white", "lightskyblue", "blue"],
     "type": "indices",
-    "collection": "pleaiades"
+    "collection": "pleaiades",
+    "unit": null
   },
   {
     "label": "SAVI",
@@ -42,7 +46,8 @@
     "formula": "SAVI = (NIR - RED) * 1.5 / (NIR + RED + 0.5)",
     "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
     "type": "indices",
-    "collection": "pleaiades"
+    "collection": "pleaiades",
+    "unit": null
   },
   {
     "label": "EVI",
@@ -51,7 +56,8 @@
     "formula": "EVI = (NIR - RED) * 2.5 / (NIR + 6 * RED - 7 * BLUE + 1)",
     "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
     "type": "indices",
-    "collection": "pleaiades"
+    "collection": "pleaiades",
+    "unit": null
   },
   {
     "label": "Canopy Height Model",
@@ -60,7 +66,8 @@
     "formula": null,
     "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
     "type": "indices",
-    "collection": "forest"
+    "collection": "forest",
+    "unit": "meter"
   },
   {
     "label": "Tree cover",
@@ -69,7 +76,8 @@
     "formula": null,
     "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
     "type": "indices",
-    "collection": "forest"
+    "collection": "forest",
+    "unit": "%"
   },
   {
     "label": "Above Ground Biomass",
@@ -78,6 +86,7 @@
     "formula": null,
     "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
     "type": "indices",
-    "collection": "forest"
+    "collection": "forest",
+    "unit": "C Ton/Ha"
   }
 ]

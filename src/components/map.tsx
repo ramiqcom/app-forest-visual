@@ -2,12 +2,14 @@ import { bbox, Feature, featureCollection, FeatureCollection } from '@turf/turf'
 import { LngLatBoundsLike, Map, RasterTileSource } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect, useState } from 'react';
+import layers from '../data/layer.json';
 import plots from '../data/location_geojson.json';
 import { Context } from '../module/store';
 import { LayerOutput } from '../module/type';
 
 export default function MapCanvas() {
-  const { layer, location, period, url, setLoading, showImage, showPlot } = useContext(Context);
+  const { layer, location, period, url, setLoading, showImage, showPlot, setVis } =
+    useContext(Context);
 
   const rasterId = 'image';
   const plotId = 'plot';
@@ -57,7 +59,12 @@ export default function MapCanvas() {
       });
 
       // Get the tile
-      const { url }: LayerOutput = await res.json();
+      const { url, vis }: LayerOutput = await res.json();
+
+      // Set visualization
+      vis.name = layer.label;
+      vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+      setVis(vis);
 
       // Show the map
       setLoading(false);

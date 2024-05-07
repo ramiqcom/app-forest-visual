@@ -14,10 +14,12 @@ export type setVisObject = Dispatch<SetStateAction<VisObject>>;
 export type setBounds = Dispatch<SetStateAction<LngLatBoundsLike>>;
 
 export type VisObject = {
-  bands?: string[] | string;
-  min: number[] | number;
-  max: number[] | number;
-  palette?: string[] | string;
+  bands?: string[];
+  min: number[];
+  max: number[];
+  palette?: string[];
+  name?: string;
+  unit?: string;
 };
 
 export type GlobalContext = {

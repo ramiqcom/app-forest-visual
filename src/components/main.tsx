@@ -7,6 +7,7 @@ import locations from '../data/location.json';
 import periodsDict from '../data/period.json';
 import { Context } from '../module/store';
 import { Option, Options, VisObject } from '../module/type';
+import Legend from './legend';
 import Loading from './loading';
 import MapCanvas from './map';
 import Panel from './panel';
@@ -56,6 +57,23 @@ export default function App({ image }) {
             <Loading image={image} />
           </div>
         ) : null}
+
+        {vis ? (
+          <div
+            style={{
+              zIndex: 99999,
+              position: 'absolute',
+              padding: '2vh',
+              marginTop: '2vh',
+              marginLeft: '2vh',
+              backgroundColor: '#181a1b',
+              fontSize: 'small',
+            }}
+          >
+            <Legend />
+          </div>
+        ) : null}
+
         <MapCanvas />
         <Panel />
       </Context.Provider>

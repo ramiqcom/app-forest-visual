@@ -41,17 +41,17 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
     .first();
 
   if (collection == 'pleaiades') {
-    image = image.divide(10000);
+    image = image.select(['b.*'], ['RED', 'GREEN', 'BLUE', 'NIR']).divide(10000);
     const mask: ee.Image = image.reduce(ee.Reducer.anyNonZero());
     image = image.updateMask(mask);
   }
 
   if (type == 'indices' && collection == 'pleaiades') {
     image = image.expression(formula, {
-      NIR: image.select('b4'),
-      RED: image.select('b1'),
-      GREEN: image.select('b2'),
-      BLUE: image.select('b3'),
+      NIR: image.select('NIR'),
+      RED: image.select('RED'),
+      GREEN: image.select('GREEN'),
+      BLUE: image.select('BLUE'),
     });
   }
 
