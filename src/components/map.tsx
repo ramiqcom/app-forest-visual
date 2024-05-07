@@ -5,7 +5,7 @@ import { Context } from '../module/store';
 import { LayerOutput } from '../module/type';
 import Loading from './loading';
 
-export default function MapCanvas() {
+export default function MapCanvas({ image }) {
   const { layer, location, period, url, bounds } = useContext(Context);
 
   const rasterId = 'image';
@@ -40,6 +40,9 @@ export default function MapCanvas() {
 
       const { url, bounds }: LayerOutput = await res.json();
 
+      // Show the map
+      setLoading(false);
+
       // Add image source
       map.addSource(rasterId, {
         type: 'raster',
@@ -58,9 +61,6 @@ export default function MapCanvas() {
 
       // Zooom to the area
       map.fitBounds(bounds);
-
-      // Show the map
-      setLoading(false);
     });
   }, []);
 
@@ -77,7 +77,7 @@ export default function MapCanvas() {
       className='flexible vertical center1 center2 center3'
       style={{ width: '100%', height: '100%' }}
     >
-      {loading ? <Loading /> : null}
+      {loading ? <Loading image={image} /> : null}
       <div id={mapDiv} style={{ display: loading ? 'none' : 'flex' }}></div>
     </div>
   );

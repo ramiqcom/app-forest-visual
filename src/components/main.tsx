@@ -10,7 +10,7 @@ import { Option, Options, VisObject } from '../module/type';
 import MapCanvas from './map';
 import Panel from './panel';
 
-export default function App() {
+export default function App({ image }) {
   const [location, setLocation] = useState<Option>(locations[0]);
   const [periods, setPeriods] = useState<Options>(periodsDict[location.value]);
   const [period, setPeriod] = useState<Option>(periods[0]);
@@ -41,7 +41,7 @@ export default function App() {
   return (
     <>
       <Context.Provider value={states}>
-        <MapCanvas />
+        <MapCanvas image={image} />
         <Panel />
       </Context.Provider>
     </>
