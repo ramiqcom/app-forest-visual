@@ -55,8 +55,8 @@ export default function MapCanvas({ image }) {
         type: 'raster',
         source: rasterId,
         id: rasterId,
-        maxzoom: 22,
-        minzoom: 8,
+        maxzoom: 20,
+        minzoom: 5,
       });
 
       // Zooom to the area
@@ -77,8 +77,8 @@ export default function MapCanvas({ image }) {
       className='flexible vertical center1 center2 center3'
       style={{ width: '100%', height: '100%' }}
     >
+      <div id={mapDiv} style={{ display: loading ? 'none' : 'inline' }}></div>
       {loading ? <Loading image={image} /> : null}
-      <div id={mapDiv} style={{ display: loading ? 'none' : 'flex' }}></div>
     </div>
   );
 }
