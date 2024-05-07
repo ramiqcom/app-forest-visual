@@ -73,9 +73,12 @@ export default function MapCanvas() {
   }, [url, bounds]);
 
   return (
-    <div className='flexible vertical' style={{ width: '100%' }}>
+    <div
+      className='flexible vertical center1 center2 center3'
+      style={{ width: '100%', height: '100%' }}
+    >
       {loading ? <Loading /> : null}
-      <div id={mapDiv} style={{ visibility: loading ? 'hidden' : 'visible' }}></div>
+      <div id={mapDiv} style={{ display: loading ? 'none' : 'flex' }}></div>
     </div>
   );
 }
