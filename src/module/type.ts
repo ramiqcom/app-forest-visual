@@ -37,6 +37,8 @@ export type GlobalContext = {
   setVis: setVisObject;
   bounds: LngLatBoundsLike;
   setBounds: setBounds;
+  loading: boolean;
+  setLoading: setBoolean;
 };
 
 export type LayerBody = {

@@ -7,6 +7,7 @@ import locations from '../data/location.json';
 import periodsDict from '../data/period.json';
 import { Context } from '../module/store';
 import { Option, Options, VisObject } from '../module/type';
+import Loading from './loading';
 import MapCanvas from './map';
 import Panel from './panel';
 
@@ -18,6 +19,7 @@ export default function App({ image }) {
   const [url, setUrl] = useState<string>();
   const [vis, setVis] = useState<VisObject>();
   const [bounds, setBounds] = useState<LngLatBoundsLike>();
+  const [loading, setLoading] = useState(true);
 
   const states = {
     locations,
@@ -36,12 +38,19 @@ export default function App({ image }) {
     setVis,
     bounds,
     setBounds,
+    loading,
+    setLoading,
   };
 
   return (
     <>
       <Context.Provider value={states}>
-        <MapCanvas image={image} />
+        {loading ? (
+          <div style={{ zIndex: 99999, position: 'absolute', width: '100%', height: '100%' }}>
+            <Loading image={image} />
+          </div>
+        ) : null}
+        <MapCanvas />
         <Panel />
       </Context.Provider>
     </>
