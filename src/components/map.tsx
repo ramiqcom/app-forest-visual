@@ -1,5 +1,5 @@
 import { bbox, Feature, featureCollection, FeatureCollection } from '@turf/turf';
-import { LngLatBoundsLike, Map, RasterTileSource } from 'maplibre-gl';
+import { LngLatBoundsLike, Map, Popup, RasterTileSource } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect, useState } from 'react';
 import layers from '../data/layer.json';
@@ -34,11 +34,11 @@ export default function MapCanvas() {
       });
       map.addLayer({
         source: plotId,
-        type: 'line',
+        type: 'fill',
         id: plotId,
         paint: {
-          'line-color': 'black',
-          'line-width': 3,
+          'fill-color': 'cyan',
+          'fill-opacity': 0.3,
         },
       });
 
@@ -95,6 +95,22 @@ export default function MapCanvas() {
         ),
       ) as LngLatBoundsLike;
       map.fitBounds(bounds, { padding: 100 });
+    });
+
+    // On click map
+    map.on('click', plotId, (e) => {
+      const array = e.lngLat.toArray();
+      const description = e.features[0].properties;
+      const keys = Object.keys(description);
+      const divData = keys
+        .map((key) => `<div class='flexible small-gap'>${key}: ${description[key]}</div>`)
+        .join('\n');
+      new Popup()
+        .setLngLat(array)
+        .setHTML(
+          `<div class='flexible vertical' style='background-color: #181a1b; margin: 0; padding: 1vh'>${divData}</div>`,
+        )
+        .addTo(map);
     });
   }, []);
 
