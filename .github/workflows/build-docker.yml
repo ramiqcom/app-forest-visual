@@ -1,0 +1,43 @@
+name: Push to GCR GitHub Action
+
+env:
+  CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # TODO: update Google Cloud project id
+  SERVICE: ${{ vars.SERVICE_NAME }} # TODO: update Cloud Run service name
+  REGION: ${{ vars.REGION }} # TODO: update Cloud Run service region
+  SERVICE_ACCOUNT_KEY_URL: ${{ secrets.SERVICE_ACCOUNT_KEY_URL }}
+  PROJECT_ID: ${{ vars.PROJECT_ID }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  build-and-push-to-gcr:
+    # Add 'id-token' with the intended permissions for workload identity federation
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ env.CREDENTIALS }}
+
+      - name: Push to GCR
+        uses: RafikFarhad/push-to-gcr-github-action@v5-rc1
+        with:
+          registry: gcr.io
+          project_id: ${{ env.PROJECT_ID }}
+          image_name: ${{ env.IMAGE_NAME }}
+          image_tag: latest
+          dockerfile: ./Dockerfile
+          context: .
+          build_args: service_account_key_url=${{ env.SERVICE_ACCOUNT_KEY_URL }}
