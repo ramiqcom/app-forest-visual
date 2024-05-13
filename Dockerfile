@@ -1,4 +1,4 @@
-FROM node:168
+FROM node:18
 
 ARG service_account_key_url
 
