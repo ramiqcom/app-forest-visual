@@ -78,12 +78,12 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          env_vars: |
-            SERVICE_ACCOUNT_KEY_URL=${{ env.SERVICE_ACCOUNT_KEY }}
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           # NOTE: If required, update to the appropriate source folder
           source: ./
+          secrets: |-
+            SERVICE_ACCOUNT_KEY_URL=${{ env.SERVICE_ACCOUNT_KEY }}:latest
 
       # If required, use the Cloud Run url output in later steps
       - name: Show Output
