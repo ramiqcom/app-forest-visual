@@ -2,6 +2,7 @@
 
 import { FeatureCollection } from '@turf/turf';
 import { Map } from 'maplibre-gl';
+import { StaticImageData } from 'next/image';
 import { useState } from 'react';
 import layers from '../data/layer.json';
 import locations from '../data/location.json';
@@ -12,8 +13,10 @@ import MapCanvas from './map';
 import Panel from './panel';
 
 export default function App({
+  images,
   defaultStates,
 }: {
+  images: Record<string, StaticImageData>;
   defaultStates: {
     location: Option;
     periods: Options;
@@ -78,7 +81,7 @@ export default function App({
         ) : null}
 
         <MapCanvas />
-        <Panel />
+        <Panel images={images} />
       </Context.Provider>
     </>
   );

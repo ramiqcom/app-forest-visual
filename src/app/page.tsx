@@ -9,6 +9,8 @@ import plots from '../data/location_geojson.json';
 import periodsDict from '../data/period.json';
 import inno from '../image/INNO4CFIs.png';
 import { loadLayer } from '../module/layer';
+import eu from '../image/EN_Co-fundedbytheEU_RGB_WHITE-300x67.png';
+import s4g from '../image/s4glogowhite.png';
 
 export default async function Home() {
   // Parameter to get url
@@ -32,6 +34,7 @@ export default async function Home() {
     <>
       <Suspense fallback={<LoadingPage image={inno} />}>
         <App
+          images={{ s4g, eu }}
           defaultStates={{
             location,
             periods,

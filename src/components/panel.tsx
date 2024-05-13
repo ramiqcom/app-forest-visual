@@ -1,3 +1,4 @@
+import Image, { StaticImageData } from 'next/image';
 import { useContext, useState } from 'react';
 import layers from '../data/layer.json';
 import periodsDict from '../data/period.json';
@@ -5,16 +6,33 @@ import { Context } from '../module/store';
 import { LayerOutput } from '../module/type';
 import { Select } from './input';
 
-export default function Panel() {
-  return (
-    <div id='panel' className='flexible vertical big-gap'>
-      <div className='title'>INNO4CFIs Work Package 4 Output</div>
+export default function Panel({ images }: { images: Record<string, StaticImageData> }) {
+  const { eu, s4g } = images;
 
-      <div className='flexible vertical gap'>
-        <Location />
-        <Period />
-        <Layer />
-        <ShowLayer />
+  return (
+    <div id='panel' className='flexible vertical wide'>
+      <div className='flexible vertical big-gap'>
+        <div className='title'>INNO4CFIs Work Package 4 Output</div>
+
+        <div className='flexible vertical gap'>
+          <Location />
+          <Period />
+          <Layer />
+          <ShowLayer />
+        </div>
+      </div>
+
+      <div className='flexible wide gap center1'>
+        <div className='flexible vertical text-center' style={{ fontSize: 'x-small' }}>
+          <Image
+            src={eu}
+            alt='European Union'
+            width={300}
+            style={{ width: '100%', height: 'auto' }}
+          />
+          GA 101115156
+        </div>
+        <Image src={s4g} alt='Space4Good' width={300} style={{ width: '25%', height: 'auto' }} />
       </div>
     </div>
   );
