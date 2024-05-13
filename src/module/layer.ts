@@ -10,7 +10,13 @@ import { LayerBody, LayerOutput, VisObject } from './type';
  * @returns
  */
 export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
-  await authenticate(process.env.SERVICE_ACCOUNT_KEY);
+  const key = await fetch(process.env.SERVICE_ACCOUNT_KEY_URL, {
+    headers: {
+      Authorization: `token ${process.env.GH_TOKEN}`,
+    },
+  });
+  const json = await key.json();
+  await authenticate(json);
 
   const { location, period, layer } = body;
 

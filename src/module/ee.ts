@@ -6,11 +6,10 @@ import { MapId, VisObject } from '../module/type';
  * @param key JSON string of Google Service Account private key
  * @returns
  */
-export function authenticate(key: string): Promise<void> {
-  const parsed = JSON.parse(key);
+export function authenticate(key: JSON): Promise<void> {
   return new Promise((resolve, reject) => {
     ee.data.authenticateViaPrivateKey(
-      parsed,
+      key,
       () =>
         ee.initialize(
           null,
