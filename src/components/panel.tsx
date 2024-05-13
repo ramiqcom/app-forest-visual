@@ -118,7 +118,6 @@ function ShowLayer() {
             setUrl(url);
 
             // Set visualization
-            // Set visualization
             vis.name = layer.label;
             vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
             setVis(vis);

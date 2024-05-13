@@ -55,6 +55,7 @@ env:
   SERVICE: ${{ vars.SERVICE_NAME }} # TODO: update Cloud Run service name
   REGION: ${{ vars.REGION }} # TODO: update Cloud Run service region
   SERVICE_ACCOUNT_KEY_URL: ${{ secrets.SERVICE_ACCOUNT_KEY_URL }}
+  NEXT_PUBLIC_STADIA_KEY: ${{ secrets.NEXT_PUBLIC_STADIA_KEY }}
   PROJECT_ID: ${{ vars.PROJECT_ID }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
 
@@ -86,7 +87,7 @@ jobs:
           image_tag: latest
           dockerfile: ./Dockerfile
           context: .
-          build_args: service_account_key_url=${{ env.SERVICE_ACCOUNT_KEY_URL }}
+          build_args: service_account_key_url=${{ env.SERVICE_ACCOUNT_KEY_URL }},service_account_key='${{ env.CREDENTIALS }}'
 
   deploy-to-cloud-run:
     needs: build-docker-and-push-to-gcr
@@ -114,6 +115,10 @@ jobs:
           region: ${{ env.REGION }}
           # NOTE: If required, update to the appropriate source folder
           image: gcr.io/${{ env.PROJECT_ID}}/${{ env.IMAGE_NAME }}:latest
+          env_vars: |
+            NEXT_PUBLIC_STADIA_KEY=${{ env.NEXT_PUBLIC_STADIA_KEY }}
+            SERVICE_ACCOUNT_KEY='${{ env.CREDENTIALS }}'
+            SERVICE_ACCOUNT_KEY_URL=${{ env.SERVICE_ACCOUNT_KEY_URL }}
 
       # If required, use the Cloud Run url output in later steps
       - name: Show Output

@@ -1,19 +1,15 @@
-import { bbox, Feature, featureCollection, FeatureCollection } from '@turf/turf';
+import { bbox, featureCollection, FeatureCollection } from '@turf/turf';
 import { LngLatBoundsLike, Map, Popup, RasterTileSource } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect, useState } from 'react';
-import layers from '../data/layer.json';
-import plots from '../data/location_geojson.json';
 import { Context } from '../module/store';
-import { LayerOutput } from '../module/type';
 
 export default function MapCanvas() {
-  const { layer, location, period, url, setLoading, showImage, showPlot, setVis } =
-    useContext(Context);
+  const { location, url, setMap, map, showPlot, showImage, plots } = useContext(Context);
 
   const rasterId = 'image';
+  const [loaded, setLoaded] = useState(false);
   const plotId = 'plot';
-  const [map, setMap] = useState<Map>();
   const mapDiv = 'map';
   const keyStadia = process.env.NEXT_PUBLIC_STADIA_KEY;
   const style = `https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json?api_key=${keyStadia}`;
@@ -26,7 +22,7 @@ export default function MapCanvas() {
     setMap(map);
 
     // When the map is mounted load the image
-    map.on('load', async () => {
+    map.on('load', () => {
       // Load vector
       map.addSource(plotId, {
         type: 'geojson',
@@ -42,59 +38,7 @@ export default function MapCanvas() {
         },
       });
 
-      // Body to load earth engine tile
-      const body = {
-        layer: layer.value,
-        location: location.value,
-        period: period.value,
-      };
-
-      // Fetch the tile
-      const res = await fetch('/layer', {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      // Get the tile
-      const { url, vis }: LayerOutput = await res.json();
-
-      // Set visualization
-      vis.name = layer.label;
-      vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
-      setVis(vis);
-
-      // Show the map
-      setLoading(false);
-
-      // Add image source
-      map.addSource(rasterId, {
-        type: 'raster',
-        tiles: [url],
-        tileSize: 128,
-      });
-
-      // Add the source as layer
-      map.addLayer(
-        {
-          type: 'raster',
-          source: rasterId,
-          id: rasterId,
-          maxzoom: 20,
-          minzoom: 5,
-        },
-        plotId,
-      );
-
-      // Get the geojson bbox
-      const bounds = bbox(
-        featureCollection(
-          plots.features.filter((feat) => feat.properties.location == location.label) as Feature[],
-        ),
-      ) as LngLatBoundsLike;
-      map.fitBounds(bounds, { padding: 100 });
+      setLoaded(true);
     });
 
     // On click map
@@ -115,35 +59,56 @@ export default function MapCanvas() {
   }, []);
 
   useEffect(() => {
-    if (map && url) {
-      const source = map.getSource(rasterId) as RasterTileSource;
-      source.setTiles([url]);
+    if (loaded && url) {
+      if (map.getSource(rasterId)) {
+        const source = map.getSource(rasterId) as RasterTileSource;
+        source.setTiles([url]);
+      } else {
+        // Add image source
+        map.addSource(rasterId, {
+          type: 'raster',
+          tiles: [url],
+          tileSize: 128,
+        });
+
+        // Add the source as layer
+        map.addLayer(
+          {
+            type: 'raster',
+            source: rasterId,
+            id: rasterId,
+            maxzoom: 20,
+            minzoom: 5,
+          },
+          plotId,
+        );
+      }
     }
-  }, [map, url]);
+  }, [loaded, url]);
 
   useEffect(() => {
-    if (map && location.label) {
+    if (loaded && location.label) {
       // Get the geojson bbox
       const bounds = bbox(
         featureCollection(
-          plots.features.filter((feat) => feat.properties.location == location.label) as Feature[],
+          plots.features.filter((feat) => feat.properties.location == location.label),
         ),
       ) as LngLatBoundsLike;
       map.fitBounds(bounds, { padding: 100 });
     }
-  }, [map, location]);
+  }, [loaded, location]);
 
   useEffect(() => {
-    if (map && map.getLayer(plotId)) {
+    if (loaded && map.getLayer(plotId)) {
       map.setLayoutProperty(plotId, 'visibility', showPlot ? 'visible' : 'none');
     }
-  }, [map, showPlot]);
+  }, [loaded, showPlot]);
 
   useEffect(() => {
-    if (map && map.getLayer(rasterId)) {
+    if (loaded && map.getLayer(rasterId)) {
       map.setLayoutProperty(rasterId, 'visibility', showImage ? 'visible' : 'none');
     }
-  }, [map, showImage]);
+  }, [loaded, showImage]);
 
   return (
     <div

@@ -1,17 +1,11 @@
-import { LngLatBoundsLike } from 'maplibre-gl';
+import { FeatureCollection } from '@turf/turf';
+import { Map } from 'maplibre-gl';
 import { Dispatch, SetStateAction } from 'react';
 
 export type Option = { label: string; value: string | number };
 
 export type Options = Option[];
-
-export type setString = Dispatch<SetStateAction<string>>;
-export type setNumber = Dispatch<SetStateAction<number>>;
-export type SetOption = Dispatch<SetStateAction<Option>>;
-export type SetOptions = Dispatch<SetStateAction<Options>>;
-export type setBoolean = Dispatch<SetStateAction<boolean>>;
-export type setVisObject = Dispatch<SetStateAction<VisObject>>;
-export type setBounds = Dispatch<SetStateAction<LngLatBoundsLike>>;
+export type SetState<T> = Dispatch<SetStateAction<T>>;
 
 export type VisObject = {
   bands?: string[];
@@ -25,26 +19,25 @@ export type VisObject = {
 export type GlobalContext = {
   locations: Options;
   location: Option;
-  setLocation: SetOption;
+  setLocation: SetState<Option>;
   periods: Options;
-  setPeriods: SetOptions;
+  setPeriods: SetState<Options>;
   period: Option;
-  setPeriod: SetOption;
+  setPeriod: SetState<Option>;
   layers: Options;
   layer: Option;
-  setLayer: SetOption;
+  setLayer: SetState<Option>;
   url: string;
-  setUrl: setString;
+  setUrl: SetState<string>;
   vis: VisObject;
-  setVis: setVisObject;
-  bounds: LngLatBoundsLike;
-  setBounds: setBounds;
-  loading: boolean;
-  setLoading: setBoolean;
+  setVis: SetState<VisObject>;
   showPlot: boolean;
-  setShowPlot: setBoolean;
+  setShowPlot: SetState<boolean>;
   showImage: boolean;
-  setShowImage: setBoolean;
+  setShowImage: SetState<boolean>;
+  map: Map;
+  setMap: SetState<Map>;
+  plots: FeatureCollection<any>;
 };
 
 export type LayerBody = {

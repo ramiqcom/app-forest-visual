@@ -10,8 +10,7 @@ import { LayerBody, LayerOutput, VisObject } from './type';
  * @returns
  */
 export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
-  const key = process.env.SERVICE_ACCOUNT_KEY;
-  await authenticate(key);
+  await authenticate(process.env.SERVICE_ACCOUNT_KEY);
 
   const { location, period, layer } = body;
 
