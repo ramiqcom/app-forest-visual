@@ -82,9 +82,7 @@ jobs:
           region: ${{ env.REGION }}
           # NOTE: If required, update to the appropriate source folder
           source: ./
-          secrets: |-
-            SERVICE_ACCOUNT_KEY_URL=projects/395367171754/secrets/service_account_key_url:latest
-
+          
       # If required, use the Cloud Run url output in later steps
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}
