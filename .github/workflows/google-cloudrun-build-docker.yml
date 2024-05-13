@@ -87,7 +87,7 @@ jobs:
           image_tag: latest
           dockerfile: ./Dockerfile
           context: .
-          build_args: service_account_key_url=${{ env.SERVICE_ACCOUNT_KEY_URL }},service_account_key='${{ env.CREDENTIALS }}'
+          build_args: service_account_key_url=${{ env.SERVICE_ACCOUNT_KEY_URL }},service_account_key=${{ env.CREDENTIALS }}
 
   deploy-to-cloud-run:
     needs: build-docker-and-push-to-gcr
