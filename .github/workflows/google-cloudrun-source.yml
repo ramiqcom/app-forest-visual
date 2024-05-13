@@ -54,6 +54,7 @@ env:
   CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # TODO: update Google Cloud project id
   SERVICE: ${{ vars.SERVICE_NAME }} # TODO: update Cloud Run service name
   REGION: ${{ vars.REGION }} # TODO: update Cloud Run service region
+  SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
 
 jobs:
   deploy:
@@ -77,6 +78,8 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
+          env_vars: |
+            SERVICE_ACCOUNT_KEY_URL=${{ env.SERVICE_ACCOUNT_KEY }}
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           # NOTE: If required, update to the appropriate source folder
