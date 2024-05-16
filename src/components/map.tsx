@@ -33,8 +33,8 @@ export default function MapCanvas() {
         type: 'fill',
         id: plotId,
         paint: {
-          'fill-color': 'cyan',
-          'fill-opacity': 0.3,
+          'fill-color': '#00000000',
+          'fill-outline-color': 'red',
         },
       });
 
