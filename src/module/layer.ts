@@ -1,3 +1,5 @@
+'use server';
+
 import ee from '@google/earthengine';
 import collections from '../data/collection.json';
 import layers from '../data/layer.json';

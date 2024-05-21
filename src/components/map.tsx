@@ -1,11 +1,15 @@
-import { bbox, featureCollection, FeatureCollection } from '@turf/turf';
+import { bbox, Feature, featureCollection, FeatureCollection } from '@turf/turf';
 import { LngLatBoundsLike, Map, Popup, RasterTileSource } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect, useState } from 'react';
+import layers from '../data/layer.json';
+import plots from '../data/location_geojson.json';
+import { loadLayer } from '../module/layer';
 import { Context } from '../module/store';
 
 export default function MapCanvas() {
-  const { location, url, setMap, map, showPlot, showImage, plots } = useContext(Context);
+  const { location, url, period, setMap, map, showPlot, showImage, layer, setUrl, setVis } =
+    useContext(Context);
 
   const rasterId = 'image';
   const [loaded, setLoaded] = useState(false);
@@ -13,6 +17,26 @@ export default function MapCanvas() {
   const mapDiv = 'map';
   const keyStadia = process.env.NEXT_PUBLIC_STADIA_KEY;
   const style = `https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json?api_key=${keyStadia}`;
+
+  // Load url
+  useEffect(() => {
+    async function loadFirst() {
+      const { url, vis } = await loadLayer({
+        location: location.value as string,
+        period: period.value as string,
+        layer: layer.value as string,
+      });
+
+      // Set visualization
+      vis.name = layer.label;
+      vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+
+      // Set url and vis
+      setUrl(url);
+      setVis(vis);
+    }
+    loadFirst();
+  }, []);
 
   useEffect(() => {
     const map = new Map({
@@ -22,7 +46,7 @@ export default function MapCanvas() {
     setMap(map);
 
     // When the map is mounted load the image
-    map.on('load', () => {
+    map.on('load', async () => {
       // Load vector
       map.addSource(plotId, {
         type: 'geojson',
@@ -38,6 +62,7 @@ export default function MapCanvas() {
         },
       });
 
+      // Make the map as loaded
       setLoaded(true);
     });
 
@@ -91,7 +116,7 @@ export default function MapCanvas() {
       // Get the geojson bbox
       const bounds = bbox(
         featureCollection(
-          plots.features.filter((feat) => feat.properties.location == location.label),
+          plots.features.filter((feat) => feat.properties.location == location.label) as Feature[],
         ),
       ) as LngLatBoundsLike;
       map.fitBounds(bounds, { padding: 100 });

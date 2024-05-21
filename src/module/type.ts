@@ -1,4 +1,3 @@
-import { FeatureCollection } from '@turf/turf';
 import { Map } from 'maplibre-gl';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -37,7 +36,6 @@ export type GlobalContext = {
   setShowImage: SetState<boolean>;
   map: Map;
   setMap: SetState<Map>;
-  plots: FeatureCollection<any>;
 };
 
 export type LayerBody = {
