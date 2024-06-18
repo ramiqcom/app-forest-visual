@@ -2,8 +2,8 @@ import Image, { StaticImageData } from 'next/image';
 import { useContext, useState } from 'react';
 import layers from '../data/layer.json';
 import periodsDict from '../data/period.json';
+import { loadLayer } from '../module/layer';
 import { Context } from '../module/store';
-import { LayerOutput } from '../module/type';
 import { Select } from './input';
 
 export default function Panel({ images }: { images: Record<string, StaticImageData> }) {
@@ -99,7 +99,8 @@ function Layer() {
 }
 
 function ShowLayer() {
-  const { location, layer, period, setUrl, setVis } = useContext(Context);
+  const { location, layer, period, setUrl, setVis, layersDict, setLayersDict } =
+    useContext(Context);
 
   const [status, setStatus] = useState<string>(undefined);
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -113,32 +114,38 @@ function ShowLayer() {
             setButtonDisabled(true);
             setStatus('Generating image...');
 
-            const body = {
-              layer: layer.value,
-              location: location.value,
-              period: period.value,
-            };
+            const layerValue = layer.value as string;
+            const locationValue = location.value as string;
+            const periodValue = period.value as string;
+            const layerId = `${locationValue}_${periodValue}_${layerValue}`;
 
-            const res = await fetch('/layer', {
-              method: 'POST',
-              body: JSON.stringify(body),
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            });
+            if (!layersDict[layerId]) {
+              const { url, vis, message } = await loadLayer({
+                location: locationValue,
+                period: periodValue,
+                layer: layerValue,
+              });
 
-            const { url, message, vis }: LayerOutput = await res.json();
+              if (message) {
+                throw new Error(message);
+              }
 
-            if (!res.ok) {
-              throw new Error(message);
+              setUrl(url);
+
+              // Set visualization
+              vis.name = layer.label;
+              vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+              setVis(vis);
+
+              // Update the dict
+              const newDict = layersDict;
+              newDict[layerId] = { url, vis };
+              setLayersDict(newDict);
+            } else {
+              const { url, vis } = layersDict[layerId];
+              setUrl(url);
+              setVis(vis);
             }
-
-            setUrl(url);
-
-            // Set visualization
-            vis.name = layer.label;
-            vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
-            setVis(vis);
 
             setStatus('Success');
           } catch ({ message }) {

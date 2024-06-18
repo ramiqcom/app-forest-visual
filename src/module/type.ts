@@ -36,6 +36,8 @@ export type GlobalContext = {
   setShowImage: SetState<boolean>;
   map: Map;
   setMap: SetState<Map>;
+  layersDict: Record<string, { url: string; vis: VisObject }>;
+  setLayersDict: SetState<Record<string, { url: string; vis: VisObject }>>;
 };
 
 export type LayerBody = {

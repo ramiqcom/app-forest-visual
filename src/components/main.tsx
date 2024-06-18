@@ -14,6 +14,7 @@ import Panel from './panel';
 
 export default function App({ images }: { images: Record<string, StaticImageData> }) {
   const [map, setMap] = useState<Map>();
+  const [layersDict, setLayersDict] = useState<Record<string, { url: string; vis: VisObject }>>({});
   const [location, setLocation] = useState<Option>(locations[0]);
   const [periods, setPeriods] = useState<Options>(periodsDict[location.value]);
   const [period, setPeriod] = useState<Option>(periods[0]);
@@ -45,6 +46,8 @@ export default function App({ images }: { images: Record<string, StaticImageData
     setShowImage,
     map,
     setMap,
+    layersDict,
+    setLayersDict,
   };
 
   return (

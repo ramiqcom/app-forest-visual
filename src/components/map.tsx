@@ -8,8 +8,20 @@ import { loadLayer } from '../module/layer';
 import { Context } from '../module/store';
 
 export default function MapCanvas() {
-  const { location, url, period, setMap, map, showPlot, showImage, layer, setUrl, setVis } =
-    useContext(Context);
+  const {
+    location,
+    url,
+    period,
+    setMap,
+    map,
+    showPlot,
+    showImage,
+    layer,
+    setUrl,
+    setVis,
+    layersDict,
+    setLayersDict,
+  } = useContext(Context);
 
   const rasterId = 'image';
   const [loaded, setLoaded] = useState(false);
@@ -18,13 +30,19 @@ export default function MapCanvas() {
   const keyStadia = process.env.NEXT_PUBLIC_STADIA_KEY;
   const style = `https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json?api_key=${keyStadia}`;
 
-  // Load url
+  // Default load url at startup
   useEffect(() => {
     async function loadFirst() {
+      const layerValue = layer.value as string;
+      const locationValue = location.value as string;
+      const periodValue = period.value as string;
+      const layerId = `${locationValue}_${periodValue}_${layerValue}`;
+
+      // Load the layer
       const { url, vis } = await loadLayer({
-        location: location.value as string,
-        period: period.value as string,
-        layer: layer.value as string,
+        location: locationValue,
+        period: periodValue,
+        layer: layerValue,
       });
 
       // Set visualization
@@ -34,6 +52,11 @@ export default function MapCanvas() {
       // Set url and vis
       setUrl(url);
       setVis(vis);
+
+      // Update the dict
+      const newDict = layersDict;
+      newDict[layerId] = { url, vis };
+      setLayersDict(newDict);
     }
     loadFirst();
   }, []);

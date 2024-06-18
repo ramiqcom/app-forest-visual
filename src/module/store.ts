@@ -1,4 +1,4 @@
 import { createContext } from 'react';
 import { GlobalContext } from './type';
 
-export const Context = createContext<GlobalContext | undefined>(undefined);
+export const Context = createContext<GlobalContext>(undefined);
