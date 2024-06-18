@@ -31,7 +31,7 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
   }
 
   // Layer data
-  const { collection, bands, type, formula, palette } = filterLayer[0];
+  const { collection, bands, type, formula, palette, values, labels } = filterLayer[0];
 
   // Collection id
   const colId = collections[collection];
@@ -47,13 +47,13 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
     .filter(ee.Filter.and(ee.Filter.eq('location', location), ee.Filter.eq('period', period)))
     .first();
 
-  if (collection == 'pleaiades') {
+  if (collection == 'pleiades') {
     image = image.select(['b.*'], ['RED', 'GREEN', 'BLUE', 'NIR']).divide(10000);
     const mask: ee.Image = image.reduce(ee.Reducer.anyNonZero());
     image = image.updateMask(mask);
   }
 
-  if (type == 'indices' && collection == 'pleaiades') {
+  if (type == 'indices' && collection == 'pleiades') {
     image = image.expression(formula, {
       NIR: image.select('NIR'),
       RED: image.select('RED'),
@@ -62,11 +62,33 @@ export async function loadLayer(body: LayerBody): Promise<LayerOutput> {
     });
   }
 
-  const vis = await stretch(image, bands, type == 'indices' ? palette : null);
+  if (type == 'category') {
+    image = image.set({
+      lc_class_values: values,
+      lc_class_palette: palette,
+    });
+  }
 
-  const { urlFormat } = await getMapId(image, vis);
+  // Tile for loading the map
+  let tile: string;
+  let visData: VisObject;
 
-  return { url: urlFormat, vis };
+  if (type == 'category') {
+    const { urlFormat } = await getMapId(image.visualize(), {});
+    tile = urlFormat;
+    visData = {
+      palette,
+      values,
+      labels,
+    };
+  } else {
+    const vis = await stretch(image, bands, type == 'indices' ? palette : null);
+    const { urlFormat } = await getMapId(image, vis);
+    tile = urlFormat;
+    visData = vis;
+  }
+
+  return { url: tile, vis: visData };
 }
 
 /**

@@ -139,8 +139,10 @@ function Layer() {
                 setUrl(url);
 
                 // Set visualization
-                vis.name = layer.label;
-                vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+                vis.name = value.label;
+                if (vis.unit) {
+                  vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+                }
                 setVis(vis);
 
                 // Update the dict

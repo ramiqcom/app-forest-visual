@@ -8,11 +8,13 @@ export type SetState<T> = Dispatch<SetStateAction<T>>;
 
 export type VisObject = {
   bands?: string[];
-  min: number[];
-  max: number[];
+  min?: number[];
+  max?: number[];
   palette?: string[];
   name?: string;
   unit?: string;
+  values?: number[];
+  labels?: string[];
 };
 
 export type GlobalContext = {

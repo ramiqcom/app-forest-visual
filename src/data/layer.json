@@ -6,7 +6,7 @@
     "formula": null,
     "palette": null,
     "type": "multispectral",
-    "collection": "pleaiades",
+    "collection": "pleiades",
     "unit": null
   },
   {
@@ -16,7 +16,7 @@
     "formula": null,
     "palette": null,
     "type": "multispectral",
-    "collection": "pleaiades",
+    "collection": "pleiades",
     "unit": null
   },
   {
@@ -26,7 +26,7 @@
     "type": "indices",
     "formula": "NDVI = (NIR - RED) / (NIR + RED)",
     "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
-    "collection": "pleaiades",
+    "collection": "pleiades",
     "unit": null
   },
   {
@@ -36,7 +36,7 @@
     "formula": "NDWI = (GREEN - NIR) / (GREEN + NIR)",
     "palette": ["red", "orange", "white", "lightskyblue", "blue"],
     "type": "indices",
-    "collection": "pleaiades",
+    "collection": "pleiades",
     "unit": null
   },
   {
@@ -46,7 +46,7 @@
     "formula": "SAVI = (NIR - RED) * 1.5 / (NIR + RED + 0.5)",
     "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
     "type": "indices",
-    "collection": "pleaiades",
+    "collection": "pleiades",
     "unit": null
   },
   {
@@ -56,7 +56,7 @@
     "formula": "EVI = (NIR - RED) * 2.5 / (NIR + 6 * RED - 7 * BLUE + 1)",
     "palette": ["red", "orange", "lightyellow", "lightgreen", "green"],
     "type": "indices",
-    "collection": "pleaiades",
+    "collection": "pleiades",
     "unit": null
   },
   {
@@ -88,5 +88,39 @@
     "type": "indices",
     "collection": "forest",
     "unit": "C Ton/Ha"
+  },
+  {
+    "label": "Land Cover",
+    "value": "lc",
+    "bands": ["lc"],
+    "values": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "palette": [
+      "228B22",
+      "32CD32",
+      "90EE90",
+      "FFD700",
+      "F08080",
+      "D2B48C",
+      "E6E6FA",
+      "87CEFA",
+      "008080",
+      "4B0082",
+      "7FFFD4"
+    ],
+    "labels": [
+      "Tree",
+      "Shrub",
+      "Grass",
+      "Crop",
+      "Built-up",
+      "Bareland",
+      "Snow and ice",
+      "Water",
+      "Wetland",
+      "Mangrove",
+      "Moss and lichen"
+    ],
+    "type": "category",
+    "collection": "lc"
   }
 ]
