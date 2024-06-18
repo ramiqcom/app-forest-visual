@@ -38,6 +38,8 @@ export type GlobalContext = {
   setMap: SetState<Map>;
   layersDict: Record<string, { url: string; vis: VisObject }>;
   setLayersDict: SetState<Record<string, { url: string; vis: VisObject }>>;
+  status: string;
+  setStatus: SetState<string>;
 };
 
 export type LayerBody = {

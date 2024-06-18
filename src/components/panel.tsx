@@ -7,6 +7,7 @@ import { Context } from '../module/store';
 import { Select } from './input';
 
 export default function Panel({ images }: { images: Record<string, StaticImageData> }) {
+  const { status } = useContext(Context);
   const { eu, s4g } = images;
 
   return (
@@ -18,7 +19,7 @@ export default function Panel({ images }: { images: Record<string, StaticImageDa
           <Location />
           <Period />
           <Layer />
-          <ShowLayer />
+          <div className='status'>{status}</div>
         </div>
       </div>
 
@@ -80,7 +81,21 @@ function Period() {
 }
 
 function Layer() {
-  const { layers, layer, setLayer, showImage, setShowImage } = useContext(Context);
+  const {
+    location,
+    layer,
+    period,
+    setUrl,
+    setVis,
+    layersDict,
+    setLayersDict,
+    setShowImage,
+    showImage,
+    setLayer,
+    setStatus,
+  } = useContext(Context);
+
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   return (
     <div className='flexible vertical'>
@@ -90,75 +105,63 @@ function Layer() {
           type='checkbox'
           style={{ width: '10%' }}
           checked={showImage}
+          disabled={buttonDisabled}
           onChange={(e) => setShowImage(e.target.checked)}
         />
-        <Select options={layers} value={layer} onChange={(value) => setLayer(value)} />
-      </div>
-    </div>
-  );
-}
 
-function ShowLayer() {
-  const { location, layer, period, setUrl, setVis, layersDict, setLayersDict } =
-    useContext(Context);
+        <Select
+          options={layers}
+          value={layer}
+          disabled={buttonDisabled}
+          onChange={async (value) => {
+            setLayer(value);
 
-  const [status, setStatus] = useState<string>(undefined);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+            try {
+              setButtonDisabled(true);
+              setStatus('Generating image...');
 
-  return (
-    <div className='flexible vertical gap'>
-      <button
-        disabled={buttonDisabled}
-        onClick={async () => {
-          try {
-            setButtonDisabled(true);
-            setStatus('Generating image...');
+              const layerValue = value.value as string;
+              const locationValue = location.value as string;
+              const periodValue = period.value as string;
+              const layerId = `${locationValue}_${periodValue}_${layerValue}`;
 
-            const layerValue = layer.value as string;
-            const locationValue = location.value as string;
-            const periodValue = period.value as string;
-            const layerId = `${locationValue}_${periodValue}_${layerValue}`;
+              if (!layersDict[layerId]) {
+                const { url, vis, message } = await loadLayer({
+                  location: locationValue,
+                  period: periodValue,
+                  layer: layerValue,
+                });
 
-            if (!layersDict[layerId]) {
-              const { url, vis, message } = await loadLayer({
-                location: locationValue,
-                period: periodValue,
-                layer: layerValue,
-              });
+                if (message) {
+                  throw new Error(message);
+                }
 
-              if (message) {
-                throw new Error(message);
+                setUrl(url);
+
+                // Set visualization
+                vis.name = layer.label;
+                vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+                setVis(vis);
+
+                // Update the dict
+                const newDict = layersDict;
+                newDict[layerId] = { url, vis };
+                setLayersDict(newDict);
+              } else {
+                const { url, vis } = layersDict[layerId];
+                setUrl(url);
+                setVis(vis);
               }
 
-              setUrl(url);
-
-              // Set visualization
-              vis.name = layer.label;
-              vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
-              setVis(vis);
-
-              // Update the dict
-              const newDict = layersDict;
-              newDict[layerId] = { url, vis };
-              setLayersDict(newDict);
-            } else {
-              const { url, vis } = layersDict[layerId];
-              setUrl(url);
-              setVis(vis);
+              setStatus('Success');
+            } catch ({ message }) {
+              setStatus(message);
+            } finally {
+              setButtonDisabled(false);
             }
-
-            setStatus('Success');
-          } catch ({ message }) {
-            setStatus(message);
-          } finally {
-            setButtonDisabled(false);
-          }
-        }}
-      >
-        Show Layer
-      </button>
-
-      <div className='status'>{status}</div>
+          }}
+        />
+      </div>
     </div>
   );
 }

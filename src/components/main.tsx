@@ -25,6 +25,8 @@ export default function App({ images }: { images: Record<string, StaticImageData
   const [showPlot, setShowPlot] = useState(true);
   const [showImage, setShowImage] = useState(true);
 
+  const [status, setStatus] = useState<string>();
+
   const states = {
     locations,
     location,
@@ -48,6 +50,8 @@ export default function App({ images }: { images: Record<string, StaticImageData
     setMap,
     layersDict,
     setLayersDict,
+    status,
+    setStatus,
   };
 
   return (
