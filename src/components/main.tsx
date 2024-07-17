@@ -1,78 +1,86 @@
 'use client';
 
-import { Map } from 'maplibre-gl';
+import { loadLocationsDb, loadPeriodsDb } from '@/module/database';
 import { StaticImageData } from 'next/image';
-import { useState } from 'react';
-import layers from '../data/layer.json';
-import locations from '../data/location.json';
-import periodsDict from '../data/period.json';
+import { useEffect, useState } from 'react';
 import { Context } from '../module/store';
-import { Option, Options, VisObject } from '../module/type';
-import Legend from './legend';
-import MapCanvas from './map';
+import { Option, Options } from '../module/type';
 import Panel from './panel';
 
 export default function App({ images }: { images: Record<string, StaticImageData> }) {
-  const [map, setMap] = useState<Map>();
-  const [layersDict, setLayersDict] = useState<Record<string, { url: string; vis: VisObject }>>({});
-  const [location, setLocation] = useState<Option>(locations[0]);
-  const [periods, setPeriods] = useState<Options>(periodsDict[location.value]);
-  const [period, setPeriod] = useState<Option>(periods[0]);
-  const [layer, setLayer] = useState<Option>(layers[0]);
+  const [locations, setLocations] = useState<Options>();
+  const [location, setLocation] = useState<Option>();
+  const [periods, setPeriods] = useState<Options>();
+  const [period, setPeriod] = useState<Option>();
+  const [layers, setLayers] = useState<Options>();
+  const [layer, setLayer] = useState<Option>();
 
-  const [url, setUrl] = useState<string>();
-  const [vis, setVis] = useState<VisObject>();
   const [showPlot, setShowPlot] = useState(true);
   const [showImage, setShowImage] = useState(true);
 
   const [status, setStatus] = useState<string>();
 
+  async function loadLocations() {
+    const data = await loadLocationsDb();
+    setLocations(data);
+    setLocation(data[0]);
+  }
+
+  async function loadPeriods(location: string) {
+    const data = await loadPeriodsDb(location);
+    setPeriods(data);
+    setPeriod(data[0]);
+  }
+
+  // First js to load the data
+  useEffect(() => {
+    loadLocations();
+  }, []);
+
+  // When the location change load the database again
+  useEffect(() => {
+    if (location?.value) {
+      loadPeriods(location.value as string);
+    }
+  }, [location]);
+
   const states = {
-    locations,
     location,
     setLocation,
     periods,
     setPeriods,
     period,
     setPeriod,
-    layers,
     layer,
     setLayer,
-    url,
-    setUrl,
-    vis,
-    setVis,
     showPlot,
     setShowPlot,
     showImage,
     setShowImage,
-    map,
-    setMap,
-    layersDict,
-    setLayersDict,
     status,
     setStatus,
+    locations,
+    setLocations,
+    layers,
+    setLayers,
   };
 
   return (
     <Context.Provider value={states}>
-      {vis ? (
-        <div
-          style={{
-            zIndex: 99999,
-            position: 'absolute',
-            padding: '2vh',
-            marginTop: '2vh',
-            marginLeft: '2vh',
-            backgroundColor: '#181a1b',
-            fontSize: 'small',
-          }}
-        >
-          <Legend />
-        </div>
-      ) : null}
-
-      <MapCanvas />
+      {/* <div
+        style={{
+          zIndex: 99999,
+          position: 'absolute',
+          padding: '2vh',
+          marginTop: '2vh',
+          marginLeft: '2vh',
+          backgroundColor: '#181a1b',
+          fontSize: 'small',
+        }}
+      >
+        <Legend />
+      </div> */}
+      {/* <MapCanvas /> */}
       <Panel images={images} />
     </Context.Provider>
   );

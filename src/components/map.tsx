@@ -1,3 +1,4 @@
+import { loadStadiaKey } from '@/module/key';
 import { bbox, Feature, featureCollection, FeatureCollection } from '@turf/turf';
 import { LngLatBoundsLike, Map, Popup, RasterTileSource } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -23,48 +24,18 @@ export default function MapCanvas() {
     setLayersDict,
   } = useContext(Context);
 
-  const rasterId = 'image';
   const [loaded, setLoaded] = useState(false);
+  const rasterId = 'image';
   const plotId = 'plot';
   const mapDiv = 'map';
-  const keyStadia = process.env.NEXT_PUBLIC_STADIA_KEY;
-  const style = `https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json?api_key=${keyStadia}`;
 
-  // Default load url at startup
-  useEffect(() => {
-    async function loadFirst() {
-      const layerValue = layer.value as string;
-      const locationValue = location.value as string;
-      const periodValue = period.value as string;
-      const layerId = `${locationValue}_${periodValue}_${layerValue}`;
+  // Async function to load map for the first time
+  async function loadMap() {
+    const keyStadia = await loadStadiaKey();
 
-      // Load the layer
-      const { url, vis } = await loadLayer({
-        location: locationValue,
-        period: periodValue,
-        layer: layerValue,
-      });
-
-      // Set visualization
-      vis.name = layer.label;
-      vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
-
-      // Set url and vis
-      setUrl(url);
-      setVis(vis);
-
-      // Update the dict
-      const newDict = layersDict;
-      newDict[layerId] = { url, vis };
-      setLayersDict(newDict);
-    }
-    loadFirst();
-  }, []);
-
-  useEffect(() => {
     const map = new Map({
       container: mapDiv,
-      style,
+      style: `https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json?api_key=${keyStadia}`,
     });
     setMap(map);
 
@@ -104,6 +75,57 @@ export default function MapCanvas() {
         )
         .addTo(map);
     });
+  }
+
+  // Async function to get url or bounds of the image
+  async function getImage({
+    layer,
+    location,
+    period,
+    bounds = false,
+  }: {
+    layer: string;
+    location: string;
+    period: string;
+    bounds?: boolean;
+  }) {}
+
+  // Async function to load the first choice layer
+  async function loadFirst() {
+    const layerValue = layer.value as string;
+    const locationValue = location.value as string;
+    const periodValue = period.value as string;
+    const layerId = `${locationValue}_${periodValue}_${layerValue}`;
+
+    // Load the layer
+    const { url, vis } = await loadLayer({
+      location: locationValue,
+      period: periodValue,
+      layer: layerValue,
+    });
+
+    // Set visualization
+    vis.name = layer.label;
+    vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+
+    // Set url and vis
+    setUrl(url);
+    setVis(vis);
+
+    // Update the dict
+    const newDict = layersDict;
+    newDict[layerId] = { url, vis };
+    setLayersDict(newDict);
+  }
+
+  // Default load url at startup
+  useEffect(() => {
+    loadFirst();
+  }, []);
+
+  useEffect(() => {
+    // Loading map for the first time
+    loadMap();
   }, []);
 
   useEffect(() => {

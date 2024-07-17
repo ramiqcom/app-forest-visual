@@ -1,4 +1,3 @@
-import { Map } from 'maplibre-gl';
 import { Dispatch, SetStateAction } from 'react';
 
 export type Option = { label: string; value: string | number };
@@ -19,6 +18,7 @@ export type VisObject = {
 
 export type GlobalContext = {
   locations: Options;
+  setLocations: SetState<Options>;
   location: Option;
   setLocation: SetState<Option>;
   periods: Options;
@@ -26,20 +26,13 @@ export type GlobalContext = {
   period: Option;
   setPeriod: SetState<Option>;
   layers: Options;
+  setLayers: SetState<Options>;
   layer: Option;
   setLayer: SetState<Option>;
-  url: string;
-  setUrl: SetState<string>;
-  vis: VisObject;
-  setVis: SetState<VisObject>;
   showPlot: boolean;
   setShowPlot: SetState<boolean>;
   showImage: boolean;
   setShowImage: SetState<boolean>;
-  map: Map;
-  setMap: SetState<Map>;
-  layersDict: Record<string, { url: string; vis: VisObject }>;
-  setLayersDict: SetState<Record<string, { url: string; vis: VisObject }>>;
   status: string;
   setStatus: SetState<string>;
 };

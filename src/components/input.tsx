@@ -14,8 +14,8 @@ type SelectProps = {
  * @returns
  */
 export function Select({
-  options = [{ label: null, value: null }],
-  value = { label: null, value: null },
+  options = [{ label: '', value: '' }],
+  value = { label: '', value: '' },
   onChange = () => null,
   disabled = false,
   visible = true,
