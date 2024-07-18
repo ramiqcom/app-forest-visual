@@ -1,72 +1,68 @@
+import visParam from '@/data/titiler-vis.json';
+import { Context } from '@/module/store';
 import { useContext } from 'react';
-import { Context } from '../module/store';
 
 export default function Legend() {
-  const { vis, layer } = useContext(Context);
+  const { layer } = useContext(Context);
 
-  if (vis) {
-    const { bands, min, max, palette, unit, name, values, labels } = vis;
+  if (!layer) {
+    return;
+  }
 
-    if (layer.value != 'lc' && vis.bands) {
-      if (bands.length > 1) {
-        const rgb = ['red', 'green', 'blue'];
-        const legend = bands.map((band, index) => (
-          <div key={index} className='flexible gap'>
+  const {
+    bands,
+    min,
+    max,
+    palette,
+    type,
+  }: {
+    bands: string[];
+    min: number;
+    max: number;
+    palette: string[];
+    type: string;
+  } = visParam[layer?.value];
+
+  switch (type) {
+    case 'composite': {
+      const colors = ['red', 'green', 'blue'];
+      return (
+        <div className='flexible vertical gap'>
+          <div className='title'>{layer?.label}</div>
+          {bands.map((band, key) => (
+            <div className='flexible small-gap center1' key={key}>
+              <div
+                style={{
+                  width: '3vh',
+                  height: '2vh',
+                  backgroundColor: colors[key],
+                  border: 'thin solid white',
+                }}
+              />
+              {band}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    case 'indices': {
+      return (
+        <div className='flexible vertical gap center1'>
+          <div className='title'>{layer?.label}</div>
+          <div className='flexible vertical small-gap center1'>
+            {max}
             <div
               style={{
-                backgroundColor: rgb[index],
-                width: '2vh',
-                height: '2vh',
+                height: '15vh',
+                width: '4vh',
                 border: 'thin solid white',
+                backgroundImage: `linear-gradient(to top, ${palette.join(', ')})`,
               }}
-            ></div>
-            {band}
+            />
+            {min}
           </div>
-        ));
-        return (
-          <div className='flexible vertical big-gap center1'>
-            <div>{name}</div>
-            <div className='flexible vertical big-gap'>{legend}</div>
-          </div>
-        );
-      } else {
-        const colorList = palette.join(', ');
-        const linear = `linear-gradient(to top, ${colorList})`;
-        const gradient = (
-          <div
-            style={{ background: linear, height: '15vh', width: '5vh', border: 'thin solid white' }}
-          ></div>
-        );
-        return (
-          <div className='flexible vertical big-gap center1'>
-            <div className='flexible vertical center1'>
-              <div>{name}</div>
-              {unit ? <div>({unit})</div> : null}
-            </div>
-            <div>{max[0].toFixed(2)}</div>
-            {gradient}
-            <div>{min[0].toFixed(2)}</div>
-          </div>
-        );
-      }
-    } else {
-      if (palette && labels) {
-        const lcLegend = [];
-        for (let i = 0; i < palette.length; i++) {
-          lcLegend.push(
-            <div className='flexible small-gap center1' key={i}>
-              <div style={{ backgroundColor: `#${palette[i]}`, width: '3vh', height: '2vh' }} />
-              <div>{labels[i]}</div>
-            </div>,
-          );
-        }
-        return (
-          <div className='flexible vertical small-gap'>
-            <div className='flexible vertical center1'>{name}</div>
-            {lcLegend}
-          </div>
-        );
-      }
+        </div>
+      );
     }
   }
 }

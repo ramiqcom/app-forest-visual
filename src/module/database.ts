@@ -3,10 +3,10 @@
 import { AuthTypes, Connector, IpAddressTypes } from '@google-cloud/cloud-sql-connector';
 import { GoogleAuth } from 'google-auth-library';
 import { Pool } from 'pg';
-import { loadPrivateKey } from './key';
+import { loadPrivateKey } from './server';
 import { Options } from './type';
 
-async function dbClient() {
+async function dbClient(): Promise<Pool> {
   const auth = new GoogleAuth({
     scopes: ['https://www.googleapis.com/auth/sqlservice.admin'],
   });
@@ -40,10 +40,10 @@ export async function loadLocationsDb(): Promise<Options> {
 
   const { rows } = await client.query(query);
 
-  return rows;
+  return rows as Options;
 }
 
-export async function loadPeriodsDb(location: string): Promise<Options> {
+export async function loadPeriodsDb({ location }: { location: string }): Promise<Options> {
   const client = await dbClient();
 
   const query = `
@@ -53,25 +53,85 @@ export async function loadPeriodsDb(location: string): Promise<Options> {
 
   const { rows } = await client.query(query);
 
-  return rows;
+  return rows as Options;
+}
+
+export async function loadLayersDb({ location, period }) {
+  const client = await dbClient();
+
+  const query = `
+		SELECT type FROM public.pleiades_image
+		WHERE (location='${location}' AND date=DATE('${period}'));
+	`;
+
+  const { rows } = await client.query(query);
+
+  // List of layers possible to produce
+  let layers = [];
+
+  // Conditional for layers that exist
+  if (rows.length) {
+    const types: string[] = rows.map((dict: Record<string, any>) => dict.type);
+
+    if (types.includes('multispectral')) {
+      layers = layers.concat([
+        { label: 'True color', value: 'true_color' },
+        { label: 'False color', value: 'false_color' },
+        { label: 'NDVI', value: 'ndvi' },
+        { label: 'NDWI', value: 'ndwi' },
+      ]);
+    }
+
+    if (types.includes('forest')) {
+      layers = layers.concat([
+        { label: 'Tree height', value: 'chm' },
+        { label: 'Tree density', value: 'treecover' },
+        { label: 'Aboveground Biomass', value: 'agb' },
+      ]);
+    }
+
+    if (types.includes('landcover')) {
+      layers = layers.concat([{ label: 'Land cover', value: 'lc' }]);
+    }
+  }
+
+  return layers as Options;
 }
 
 export async function loadImagedb({
   location,
-  date,
+  period,
   type,
 }: {
   location: string;
-  date: string;
+  period: string;
   type: string;
 }) {
   const client = await dbClient();
 
   const query = `
 		SELECT url FROM public.pleiades_image
-		WHERE (location='${location}' AND date=DATE('${date}') AND type='${type}')
+		WHERE (location='${location}' AND date=DATE('${period}') AND type='${type}');
 	`;
   const { rows } = await client.query(query);
 
-  return rows;
+  return rows[0].url as string;
+}
+
+export async function loadBboxDb({ location }) {
+  const client = await dbClient();
+
+  const query = `
+		SELECT
+      ST_XMin(geo::geometry) as xmin,
+      ST_YMin(geo::geometry) as ymin,
+      ST_XMax(geo::geometry) as xmax,
+      ST_YMax(geo::geometry) as ymax
+    FROM public.location
+    WHERE id='${location}';
+	`;
+
+  const { rows } = await client.query(query);
+
+  return Object.values(rows[0]) as number[];
 }

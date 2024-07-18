@@ -1,10 +1,12 @@
 'use client';
 
-import { loadLocationsDb, loadPeriodsDb } from '@/module/database';
+import { loadLayersDb, loadLocationsDb, loadPeriodsDb } from '@/module/database';
 import { StaticImageData } from 'next/image';
 import { useEffect, useState } from 'react';
 import { Context } from '../module/store';
-import { Option, Options } from '../module/type';
+import { Option, Options, Status } from '../module/type';
+import Legend from './legend';
+import MapCanvas from './map';
 import Panel from './panel';
 
 export default function App({ images }: { images: Record<string, StaticImageData> }) {
@@ -18,18 +20,54 @@ export default function App({ images }: { images: Record<string, StaticImageData
   const [showPlot, setShowPlot] = useState(true);
   const [showImage, setShowImage] = useState(true);
 
-  const [status, setStatus] = useState<string>();
+  const [status, setStatus] = useState<Status>();
 
   async function loadLocations() {
-    const data = await loadLocationsDb();
-    setLocations(data);
-    setLocation(data[0]);
+    try {
+      setStatus({ text: 'Loading locations...', status: 'process' });
+      const data = await loadLocationsDb();
+      setLocations(data);
+
+      if (!location) {
+        setLocation(data[0]);
+      }
+
+      setStatus({ text: 'Locations loaded', status: 'success' });
+    } catch ({ message }) {
+      setStatus({ text: message, status: 'failed' });
+    }
   }
 
-  async function loadPeriods(location: string) {
-    const data = await loadPeriodsDb(location);
-    setPeriods(data);
-    setPeriod(data[0]);
+  async function loadPeriods({ location }: { location: string }) {
+    try {
+      setStatus({ text: 'Loading periods...', status: 'process' });
+      const data = await loadPeriodsDb({ location });
+      setPeriods(data);
+
+      if (!period) {
+        setPeriod(data[0]);
+      }
+
+      setStatus({ text: 'Periods loaded', status: 'success' });
+    } catch ({ message }) {
+      setStatus({ text: message, status: 'failed' });
+    }
+  }
+
+  async function loadLayers({ location, period }: { location: string; period: string }) {
+    try {
+      setStatus({ text: 'Loading layers...', status: 'process' });
+      const data = await loadLayersDb({ location, period });
+      setLayers(data);
+
+      if (!layer) {
+        setLayer(data[0]);
+      }
+
+      setStatus({ text: 'Layers loaded', status: 'success' });
+    } catch ({ message }) {
+      setStatus({ text: message, status: 'failed' });
+    }
   }
 
   // First js to load the data
@@ -40,9 +78,16 @@ export default function App({ images }: { images: Record<string, StaticImageData
   // When the location change load the database again
   useEffect(() => {
     if (location?.value) {
-      loadPeriods(location.value as string);
+      loadPeriods({ location: location.value as string });
     }
   }, [location]);
+
+  // When the period change load what layers is available
+  useEffect(() => {
+    if (location?.value && period?.value) {
+      loadLayers({ location: location.value as string, period: period.value as string });
+    }
+  }, [location, period]);
 
   const states = {
     location,
@@ -67,7 +112,7 @@ export default function App({ images }: { images: Record<string, StaticImageData
 
   return (
     <Context.Provider value={states}>
-      {/* <div
+      <div
         style={{
           zIndex: 99999,
           position: 'absolute',
@@ -79,8 +124,8 @@ export default function App({ images }: { images: Record<string, StaticImageData
         }}
       >
         <Legend />
-      </div> */}
-      {/* <MapCanvas /> */}
+      </div>
+      <MapCanvas />
       <Panel images={images} />
     </Context.Provider>
   );

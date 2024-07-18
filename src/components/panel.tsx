@@ -1,8 +1,5 @@
 import Image, { StaticImageData } from 'next/image';
-import { useContext, useState } from 'react';
-import layers from '../data/layer.json';
-import periodsDict from '../data/period.json';
-import { loadLayer } from '../module/layer';
+import { useContext } from 'react';
 import { Context } from '../module/store';
 import { Select } from './input';
 
@@ -19,7 +16,7 @@ export default function Panel({ images }: { images: Record<string, StaticImageDa
           <Location />
           <Period />
           <Layer />
-          <div className='status'>{status}</div>
+          <div className='status'>{status?.text}</div>
         </div>
       </div>
 
@@ -40,8 +37,7 @@ export default function Panel({ images }: { images: Record<string, StaticImageDa
 }
 
 function Location() {
-  const { locations, location, setLocation, setPeriods, setPeriod, showPlot, setShowPlot } =
-    useContext(Context);
+  const { locations, location, setLocation, showPlot, setShowPlot, status } = useContext(Context);
 
   return (
     <div className='flexible vertical'>
@@ -51,18 +47,14 @@ function Location() {
           type='checkbox'
           style={{ width: '10%' }}
           checked={showPlot}
+          disabled={status?.status == 'process' || !locations?.length}
           onChange={(e) => setShowPlot(e.target.checked)}
         />
         <Select
           options={locations}
           value={location}
-          onChange={(value) => {
-            setLocation(value);
-
-            const periods = periodsDict[value.value];
-            setPeriods(periods);
-            setPeriod(periods[0]);
-          }}
+          disabled={status?.status == 'process' || !locations?.length}
+          onChange={(value) => setLocation(value)}
         />
       </div>
     </div>
@@ -70,32 +62,23 @@ function Location() {
 }
 
 function Period() {
-  const { periods, period, setPeriod } = useContext(Context);
+  const { periods, period, setPeriod, status } = useContext(Context);
 
   return (
     <div className='flexible vertical'>
       Select period
-      <Select options={periods} value={period} onChange={(value) => setPeriod(value)} />
+      <Select
+        options={periods}
+        disabled={status?.status == 'process' || !periods?.length}
+        value={period}
+        onChange={(value) => setPeriod(value)}
+      />
     </div>
   );
 }
 
 function Layer() {
-  const {
-    location,
-    layer,
-    period,
-    setUrl,
-    setVis,
-    layersDict,
-    setLayersDict,
-    setShowImage,
-    showImage,
-    setLayer,
-    setStatus,
-  } = useContext(Context);
-
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const { layer, layers, setShowImage, showImage, setLayer, status } = useContext(Context);
 
   return (
     <div className='flexible vertical'>
@@ -105,63 +88,15 @@ function Layer() {
           type='checkbox'
           style={{ width: '10%' }}
           checked={showImage}
-          disabled={buttonDisabled}
+          disabled={status?.status == 'process' || !layers?.length}
           onChange={(e) => setShowImage(e.target.checked)}
         />
 
         <Select
           options={layers}
           value={layer}
-          disabled={buttonDisabled}
-          onChange={async (value) => {
-            setLayer(value);
-
-            try {
-              setButtonDisabled(true);
-              setStatus('Generating image...');
-
-              const layerValue = value.value as string;
-              const locationValue = location.value as string;
-              const periodValue = period.value as string;
-              const layerId = `${locationValue}_${periodValue}_${layerValue}`;
-
-              if (!layersDict[layerId]) {
-                const { url, vis, message } = await loadLayer({
-                  location: locationValue,
-                  period: periodValue,
-                  layer: layerValue,
-                });
-
-                if (message) {
-                  throw new Error(message);
-                }
-
-                setUrl(url);
-
-                // Set visualization
-                vis.name = value.label;
-                if (vis.unit) {
-                  vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
-                }
-                setVis(vis);
-
-                // Update the dict
-                const newDict = layersDict;
-                newDict[layerId] = { url, vis };
-                setLayersDict(newDict);
-              } else {
-                const { url, vis } = layersDict[layerId];
-                setUrl(url);
-                setVis(vis);
-              }
-
-              setStatus('Success');
-            } catch ({ message }) {
-              setStatus(message);
-            } finally {
-              setButtonDisabled(false);
-            }
-          }}
+          disabled={status?.status == 'process' || !layers?.length}
+          onChange={(value) => setLayer(value)}
         />
       </div>
     </div>

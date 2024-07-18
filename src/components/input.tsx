@@ -10,12 +10,11 @@ type SelectProps = {
 
 /**
  * Select component
- * @param param0
  * @returns
  */
 export function Select({
   options = [{ label: '', value: '' }],
-  value = { label: '', value: '' },
+  value,
   onChange = () => null,
   disabled = false,
   visible = true,
@@ -27,7 +26,7 @@ export function Select({
 
   return (
     <select
-      value={value.value}
+      value={value?.value || options[0]?.value}
       style={{
         display: visible ? 'flex' : 'none',
       }}

@@ -1,29 +1,17 @@
-import { loadStadiaKey } from '@/module/key';
-import { bbox, Feature, featureCollection, FeatureCollection } from '@turf/turf';
+import plots from '@/data/location_geojson.json';
+import visParams from '@/data/titiler-vis.json';
+import { loadBboxDb, loadImagedb } from '@/module/database';
+import { loadStadiaKey } from '@/module/server';
+import { Context } from '@/module/store';
+import { FeatureCollection } from '@turf/turf';
 import { LngLatBoundsLike, Map, Popup, RasterTileSource } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect, useState } from 'react';
-import layers from '../data/layer.json';
-import plots from '../data/location_geojson.json';
-import { loadLayer } from '../module/layer';
-import { Context } from '../module/store';
 
 export default function MapCanvas() {
-  const {
-    location,
-    url,
-    period,
-    setMap,
-    map,
-    showPlot,
-    showImage,
-    layer,
-    setUrl,
-    setVis,
-    layersDict,
-    setLayersDict,
-  } = useContext(Context);
+  const { location, period, layer, showPlot, showImage, setStatus } = useContext(Context);
 
+  const [map, setMap] = useState<Map>();
   const [loaded, setLoaded] = useState(false);
   const rasterId = 'image';
   const plotId = 'plot';
@@ -78,50 +66,81 @@ export default function MapCanvas() {
   }
 
   // Async function to get url or bounds of the image
-  async function getImage({
+  async function loadImage({
     layer,
     location,
     period,
-    bounds = false,
   }: {
     layer: string;
     location: string;
     period: string;
-    bounds?: boolean;
-  }) {}
+  }) {
+    try {
+      setStatus({ text: 'Loading image...', status: 'process' });
+      const typeDict = {
+        true_color: 'multispectral',
+        false_color: 'multispectral',
+        ndvi: 'multispectral',
+        ndwi: 'multispectral',
+        chm: 'forest',
+        treecover: 'forest',
+        agb: 'forest',
+        lc: 'landcover',
+      };
 
-  // Async function to load the first choice layer
-  async function loadFirst() {
-    const layerValue = layer.value as string;
-    const locationValue = location.value as string;
-    const periodValue = period.value as string;
-    const layerId = `${locationValue}_${periodValue}_${layerValue}`;
+      // Get image url
+      const url = await loadImagedb({ location, period, type: typeDict[layer] });
 
-    // Load the layer
-    const { url, vis } = await loadLayer({
-      location: locationValue,
-      period: periodValue,
-      layer: layerValue,
-    });
+      // Get image bounds
+      const bounds = await (await fetch(`cog/bounds?url=${url}`)).json();
 
-    // Set visualization
-    vis.name = layer.label;
-    vis.unit = layers.filter((data) => data.value == layer.value)[0].unit;
+      // Visualization parameter
+      const vis: string = visParams[layer].param;
 
-    // Set url and vis
-    setUrl(url);
-    setVis(vis);
+      // Image full url
+      const fullUrl = `/cog/tiles/{z}/{x}/{y}.png?url=${url}&${vis}`;
 
-    // Update the dict
-    const newDict = layersDict;
-    newDict[layerId] = { url, vis };
-    setLayersDict(newDict);
+      // Add image to map
+      if (map.getSource(rasterId)) {
+        const source = map.getSource(rasterId) as RasterTileSource;
+        source.setTiles([fullUrl]);
+        source.bounds = bounds;
+      } else {
+        map.addSource(rasterId, {
+          type: 'raster',
+          tiles: [fullUrl],
+          tileSize: 128,
+          bounds: bounds,
+        });
+        map.addLayer(
+          {
+            type: 'raster',
+            source: rasterId,
+            id: rasterId,
+            minzoom: 0,
+            maxzoom: 20,
+          },
+          map.getSource(plotId) ? plotId : null,
+        );
+      }
+
+      setStatus({ text: 'Image loaded', status: 'success' });
+    } catch ({ message }) {
+      setStatus({ text: message, status: 'failed' });
+    }
   }
 
-  // Default load url at startup
-  useEffect(() => {
-    loadFirst();
-  }, []);
+  // Zoom to location function
+  async function ZoomToLocation({ location }) {
+    try {
+      setStatus({ text: 'Zooming to location...', status: 'process' });
+      const bbox = await loadBboxDb({ location });
+      map.fitBounds(bbox as LngLatBoundsLike);
+      setStatus({ text: 'Zoomed to location', status: 'success' });
+    } catch ({ message }) {
+      setStatus({ text: message, status: 'failed' });
+    }
+  }
 
   useEffect(() => {
     // Loading map for the first time
@@ -129,42 +148,19 @@ export default function MapCanvas() {
   }, []);
 
   useEffect(() => {
-    if (loaded && url) {
-      if (map.getSource(rasterId)) {
-        const source = map.getSource(rasterId) as RasterTileSource;
-        source.setTiles([url]);
-      } else {
-        // Add image source
-        map.addSource(rasterId, {
-          type: 'raster',
-          tiles: [url],
-          tileSize: 128,
-        });
-
-        // Add the source as layer
-        map.addLayer(
-          {
-            type: 'raster',
-            source: rasterId,
-            id: rasterId,
-            maxzoom: 20,
-            minzoom: 5,
-          },
-          plotId,
-        );
-      }
+    if (loaded && layer && location && period) {
+      // Loading image if layer and everything is loaded
+      loadImage({
+        layer: layer.value as string,
+        location: location.value as string,
+        period: period.value as string,
+      });
     }
-  }, [loaded, url]);
+  }, [loaded, location, period, layer]);
 
   useEffect(() => {
-    if (loaded && location.label) {
-      // Get the geojson bbox
-      const bounds = bbox(
-        featureCollection(
-          plots.features.filter((feat) => feat.properties.location == location.label) as Feature[],
-        ),
-      ) as LngLatBoundsLike;
-      map.fitBounds(bounds, { padding: 100 });
+    if (loaded && location) {
+      ZoomToLocation({ location: location.value });
     }
   }, [loaded, location]);
 

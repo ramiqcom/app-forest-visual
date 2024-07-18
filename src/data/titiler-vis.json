@@ -1,0 +1,26 @@
+{
+  "true_color": {
+    "param": "bidx=1&bidx=2&bidx=3&rescale=100,2000&rescale=100,2000&rescale=100,2000&nodata=-9999",
+    "type": "composite",
+    "bands": ["Red", "Green", "Blue"]
+  },
+  "false_color": {
+    "param": "bidx=4&bidx=1&bidx=2&rescale=1000,4000&rescale=100,2000&rescale=100,2000&nodata=-9999",
+    "type": "composite",
+    "bands": ["NIR", "Red", "Green"]
+  },
+  "ndvi": {
+    "param": "expression=%28b4-b1%29%2F%28b4%2Bb1%29&rescale=-1,1&colormap_name=rdylgn&nodata=-9999",
+    "type": "indices",
+    "min": -1,
+    "max": 1,
+    "palette": ["red", "yellow", "green"]
+  },
+  "ndwi": {
+    "param": "expression=%28b2-b4%29%2F%28b2%2Bb4%29&rescale=-1,1&colormap_name=rdbu&nodata=-9999",
+    "type": "indices",
+    "min": -1,
+    "max": 1,
+    "palette": ["red", "white", "blue"]
+  }
+}

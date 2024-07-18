@@ -1,8 +1,7 @@
 'use server';
 
 export async function loadStadiaKey() {
-  const keyStadia = process.env.NEXT_PUBLIC_STADIA_KEY;
-  return keyStadia;
+  return process.env.NEXT_PUBLIC_STADIA_KEY;
 }
 
 export async function loadPrivateKey() {
@@ -13,4 +12,8 @@ export async function loadPrivateKey() {
   });
   const json = await key.json();
   return json;
+}
+
+export async function loadTitiler() {
+  return process.env.TITILER_ENDPOINT;
 }

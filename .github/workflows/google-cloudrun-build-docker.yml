@@ -54,11 +54,17 @@ env:
   CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # TODO: update Google Cloud project id
   SERVICE: ${{ vars.SERVICE_NAME }} # TODO: update Cloud Run service name
   REGION: ${{ vars.REGION }} # TODO: update Cloud Run service region
+
   SERVICE_ACCOUNT_KEY_URL: ${{ secrets.SERVICE_ACCOUNT_KEY_URL }}
   NEXT_PUBLIC_STADIA_KEY: ${{ secrets.NEXT_PUBLIC_STADIA_KEY }}
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   PROJECT_ID: ${{ vars.PROJECT_ID }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+  TITILER_ENDPOINT: ${{ secrets.TITILER_ENDPOINT }}
+  INSTANCE_CONNECTION_NAME: ${{ secrets.INSTANCE_CONNECTION_NAME }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_NAME: ${{ secrets.DB_NAME }}
 
 jobs:
   build-docker-and-push-to-gcr:
@@ -88,7 +94,6 @@ jobs:
           image_tag: latest
           dockerfile: ./Dockerfile
           context: .
-          build_args: service_account_key_url=${{ env.SERVICE_ACCOUNT_KEY_URL }},gh_token=${{ env.GH_TOKEN }}
 
   deploy-to-cloud-run:
     needs: build-docker-and-push-to-gcr
@@ -120,6 +125,11 @@ jobs:
             NEXT_PUBLIC_STADIA_KEY=${{ env.NEXT_PUBLIC_STADIA_KEY }}
             SERVICE_ACCOUNT_KEY_URL=${{ env.SERVICE_ACCOUNT_KEY_URL }}
             GH_TOKEN=${{ env.GH_TOKEN }}
+            TITILER_ENDPOINT=${{ env.TITILER_ENDPOINT }}
+            INSTANCE_CONNECTION_NAME=${{ env.INSTANCE_CONNECTION_NAME }}
+            DB_USER=${{ env.DB_USER }}
+            DB_PASSWORD=${{ env.DB_PASSWORD }}
+            DB_NAME=${{ env.DB_NAME }}
 
       # If required, use the Cloud Run url output in later steps
       - name: Show Output
