@@ -1,6 +1,6 @@
+import { Context } from '@/module/store';
 import Image, { StaticImageData } from 'next/image';
 import { useContext } from 'react';
-import { Context } from '../module/store';
 import { Select } from './input';
 
 export default function Panel({ images }: { images: Record<string, StaticImageData> }) {

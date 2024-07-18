@@ -1,10 +1,10 @@
 'use client';
 
 import { loadLayersDb, loadLocationsDb, loadPeriodsDb } from '@/module/database';
+import { Context } from '@/module/store';
+import { Option, Options, Status } from '@/module/type';
 import { StaticImageData } from 'next/image';
 import { useEffect, useState } from 'react';
-import { Context } from '../module/store';
-import { Option, Options, Status } from '../module/type';
 import Legend from './legend';
 import MapCanvas from './map';
 import Panel from './panel';

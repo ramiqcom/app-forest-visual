@@ -1,4 +1,4 @@
-import { Option, Options } from '../module/type';
+import { Option, Options } from '@/module/type';
 
 type SelectProps = {
   options?: Options;
