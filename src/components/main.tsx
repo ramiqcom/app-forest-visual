@@ -3,13 +3,12 @@
 import { loadLayersDb, loadLocationsDb, loadPeriodsDb } from '@/module/database';
 import { Context } from '@/module/store';
 import { Option, Options, Status } from '@/module/type';
-import { StaticImageData } from 'next/image';
 import { useEffect, useState } from 'react';
 import Legend from './legend';
 import MapCanvas from './map';
 import Panel from './panel';
 
-export default function App({ images }: { images: Record<string, StaticImageData> }) {
+export default function App() {
   const [locations, setLocations] = useState<Options>();
   const [location, setLocation] = useState<Option>();
   const [periods, setPeriods] = useState<Options>();
@@ -126,7 +125,7 @@ export default function App({ images }: { images: Record<string, StaticImageData
         <Legend />
       </div>
       <MapCanvas />
-      <Panel images={images} />
+      <Panel />
     </Context.Provider>
   );
 }

@@ -13,7 +13,3 @@ export async function loadPrivateKey() {
   const json = await key.json();
   return json;
 }
-
-export async function loadTitiler() {
-  return process.env.TITILER_ENDPOINT;
-}

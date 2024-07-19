@@ -1,11 +1,12 @@
+import eu from '@/image/EN_Co-fundedbytheEU_RGB_WHITE-300x67.png';
+import s4g from '@/image/s4glogowhite.png';
 import { Context } from '@/module/store';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { useContext } from 'react';
 import { Select } from './input';
 
-export default function Panel({ images }: { images: Record<string, StaticImageData> }) {
+export default function Panel() {
   const { status } = useContext(Context);
-  const { eu, s4g } = images;
 
   return (
     <div id='panel' className='flexible vertical wide'>
