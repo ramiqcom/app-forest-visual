@@ -9,6 +9,8 @@ export async function GET(req: NextRequest) {
     const endpoint = `${process.env.TITILER_ENDPOINT}${pathname}${search}`;
     const res = await fetch(endpoint);
     const json = await res.json();
+    const url = json.tiles[0];
+    json.tiles[0] = url.replace('http', 'https');
     return NextResponse.json(json, {
       status: 200,
       headers: {
