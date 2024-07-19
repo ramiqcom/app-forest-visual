@@ -19,50 +19,58 @@ export default function MapCanvas() {
 
   // Async function to load map for the first time
   async function loadMap() {
-    const keyStadia = await loadStadiaKey();
+    try {
+      setStatus({ text: 'Loading map...', status: 'process' });
 
-    const map = new Map({
-      container: mapDiv,
-      style: `https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json?api_key=${keyStadia}`,
-    });
-    setMap(map);
+      const keyStadia = await loadStadiaKey();
 
-    // When the map is mounted load the image
-    map.on('load', async () => {
-      // Load vector
-      map.addSource(plotId, {
-        type: 'geojson',
-        data: plots as FeatureCollection<any>,
+      const map = new Map({
+        container: mapDiv,
+        style: `https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json?api_key=${keyStadia}`,
       });
-      map.addLayer({
-        source: plotId,
-        type: 'fill',
-        id: plotId,
-        paint: {
-          'fill-color': '#00000000',
-          'fill-outline-color': 'red',
-        },
+      setMap(map);
+
+      // When the map is mounted load the image
+      map.on('load', async () => {
+        // Load vector
+        map.addSource(plotId, {
+          type: 'geojson',
+          data: plots as FeatureCollection<any>,
+        });
+        map.addLayer({
+          source: plotId,
+          type: 'fill',
+          id: plotId,
+          paint: {
+            'fill-color': '#00000000',
+            'fill-outline-color': 'red',
+          },
+        });
+
+        // Make the map as loaded
+        setLoaded(true);
       });
 
-      // Make the map as loaded
-      setLoaded(true);
-    });
+      // On click map
+      map.on('click', plotId, (e) => {
+        const array = e.lngLat.toArray();
+        const description = e.features[0].properties;
+        const keys = Object.keys(description);
+        const divData = keys
+          .map((key) => `<div class='flexible small-gap'>${key}: ${description[key]}</div>`)
+          .join('\n');
+        new Popup()
+          .setLngLat(array)
+          .setHTML(
+            `<div class='flexible vertical' style='background-color: #181a1b; margin: 0; padding: 1vh'>${divData}</div>`,
+          )
+          .addTo(map);
+      });
 
-    // On click map
-    map.on('click', plotId, (e) => {
-      const array = e.lngLat.toArray();
-      const description = e.features[0].properties;
-      const keys = Object.keys(description);
-      const divData = keys
-        .map((key) => `<div class='flexible small-gap'>${key}: ${description[key]}</div>`)
-        .join('\n');
-      new Popup()
-        .setLngLat(array)
-        .setHTML(
-          `<div class='flexible vertical' style='background-color: #181a1b; margin: 0; padding: 1vh'>${divData}</div>`,
-        )
-        .addTo(map);
-    });
+      setStatus({ text: 'Map loaded', status: 'success' });
+    } catch ({ message }) {
+      setStatus({ text: message, status: 'failed' });
+    }
   }
 
   // Async function to get url or bounds of the image

@@ -5,6 +5,7 @@ export async function GET(req: NextRequest) {
     const { nextUrl } = req;
     const { pathname, search } = nextUrl;
     const endpoint = `${process.env.TITILER_ENDPOINT}${pathname}${search}`;
+    console.log(endpoint);
     const res = await fetch(endpoint);
     const buffer = await res.arrayBuffer();
     const type = 'image/png';

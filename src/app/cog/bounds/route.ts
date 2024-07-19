@@ -5,6 +5,7 @@ export async function GET(req: NextRequest) {
     const { nextUrl } = req;
     const { pathname, search } = nextUrl;
     const endpoint = `${process.env.TITILER_ENDPOINT}${pathname}${search}`;
+    console.log(endpoint);
     const res = await fetch(endpoint);
     const { bounds } = await res.json();
     return NextResponse.json(bounds, { status: 200 });
