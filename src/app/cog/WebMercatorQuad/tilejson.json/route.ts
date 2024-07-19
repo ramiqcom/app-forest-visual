@@ -9,7 +9,12 @@ export async function GET(req: NextRequest) {
     const endpoint = `${process.env.TITILER_ENDPOINT}${pathname}${search}`;
     const res = await fetch(endpoint);
     const json = await res.json();
-    return NextResponse.json(json, { status: 200 });
+    return NextResponse.json(json, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } catch ({ message }) {
     return NextResponse.json({ message }, { status: 404 });
   }
