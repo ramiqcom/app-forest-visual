@@ -99,26 +99,21 @@ export default function MapCanvas() {
       // Get image url
       const url = await loadImagedb({ location, period, type: typeDict[layer] });
 
-      // Get image bounds
-      const bounds = await (await fetch(`cog/bounds?url=${url}`)).json();
-
       // Visualization parameter
       const vis: string = visParams[layer].param;
 
       // Image full url
-      const fullUrl = `/cog/tiles/{z}/{x}/{y}.png?url=${url}&${vis}`;
+      const fullUrl = `/cog/WebMercatorQuad/tilejson.json?url=${url}&${vis}`;
 
       // Add image to map
       if (map.getSource(rasterId)) {
         const source = map.getSource(rasterId) as RasterTileSource;
-        source.setTiles([fullUrl]);
-        source.bounds = bounds;
+        source.setUrl(fullUrl);
       } else {
         map.addSource(rasterId, {
           type: 'raster',
-          tiles: [fullUrl],
+          url: fullUrl,
           tileSize: 128,
-          bounds: bounds,
         });
         map.addLayer(
           {
