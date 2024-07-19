@@ -98,18 +98,15 @@ export default function MapCanvas() {
 
       // Get image url
       const url = await loadImagedb({ location, period, type: typeDict[layer] });
-      console.log(url);
 
       // Get image bounds
       const bounds = await (await fetch(`cog/bounds?url=${url}`)).json();
-      console.log(bounds);
 
       // Visualization parameter
       const vis: string = visParams[layer].param;
 
       // Image full url
       const fullUrl = `/cog/tiles/{z}/{x}/{y}.png?url=${url}&${vis}`;
-      console.log(fullUrl);
 
       // Add image to map
       if (map.getSource(rasterId)) {
