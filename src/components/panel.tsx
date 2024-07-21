@@ -1,5 +1,6 @@
 import eu from '@/image/EN_Co-fundedbytheEU_RGB_WHITE-300x67.png';
 import s4g from '@/image/s4glogowhite.png';
+import { loadLayersDb, loadPeriodsDb } from '@/module/database';
 import { Context } from '@/module/store';
 import Image from 'next/image';
 import { useContext } from 'react';
@@ -38,7 +39,18 @@ export default function Panel() {
 }
 
 function Location() {
-  const { locations, location, setLocation, showPlot, setShowPlot, status } = useContext(Context);
+  const {
+    locations,
+    location,
+    setLocation,
+    showPlot,
+    setShowPlot,
+    status,
+    setStatus,
+    setPeriods,
+    setPeriod,
+    period,
+  } = useContext(Context);
 
   return (
     <div className='flexible vertical'>
@@ -55,7 +67,22 @@ function Location() {
           options={locations}
           value={location}
           disabled={status?.status == 'process' || !locations?.length}
-          onChange={(value) => setLocation(value)}
+          onChange={async (value) => {
+            try {
+              setLocation(value);
+              setStatus({ text: 'Loading periods...', status: 'process' });
+              const data = await loadPeriodsDb({ location: value.value as string });
+              setPeriods(data);
+
+              if (!data.filter((x) => x.value == period.value).length) {
+                setPeriod(data[0]);
+              }
+
+              setStatus({ text: 'Periods loaded', status: 'success' });
+            } catch ({ message }) {
+              setStatus({ text: message, status: 'failed' });
+            }
+          }}
         />
       </div>
     </div>
@@ -63,7 +90,8 @@ function Location() {
 }
 
 function Period() {
-  const { periods, period, setPeriod, status } = useContext(Context);
+  const { periods, period, setPeriod, status, setStatus, setLayer, setLayers, location, layer } =
+    useContext(Context);
 
   return (
     <div className='flexible vertical'>
@@ -72,7 +100,22 @@ function Period() {
         options={periods}
         disabled={status?.status == 'process' || !periods?.length}
         value={period}
-        onChange={(value) => setPeriod(value)}
+        onChange={async (value) => {
+          try {
+            setPeriod(value);
+            setStatus({ text: 'Loading layers...', status: 'process' });
+            const data = await loadLayersDb({ location: location.value, period: value.value });
+            setLayers(data);
+
+            if (!data.filter((x) => x.value == layer.value).length) {
+              setLayer(data[0]);
+            }
+
+            setStatus({ text: 'Layers loaded', status: 'success' });
+          } catch ({ message }) {
+            setStatus({ text: message, status: 'failed' });
+          }
+        }}
       />
     </div>
   );
