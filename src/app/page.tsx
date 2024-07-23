@@ -11,6 +11,9 @@ export default async function Home() {
   const layers = await loadLayersDb({ location: location.value, period: period.value });
   const layer = layers[0];
 
+  // Awake the titiler
+  await fetch(`${process.env.TITILER_ENDPOINT}/healthz`);
+
   return (
     <>
       <App
