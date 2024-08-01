@@ -48,7 +48,9 @@ export async function loadPeriodsDb({ location }: { location: string }): Promise
 
   const query = `
 		SELECT TO_CHAR(date, 'YYYY-MM-DD') as value, TO_CHAR(date, 'YYYY-MM-DD') as label FROM public.pleiades_image
-		WHERE location='${location}';
+		WHERE location='${location}'
+    GROUP BY date
+    ORDER BY date DESC;
 	`;
 
   const { rows } = await client.query(query);
@@ -84,13 +86,13 @@ export async function loadLayersDb({ location, period }) {
 
     if (types.includes('forest')) {
       layers = layers.concat([
-        { label: 'Tree height', value: 'chm' },
-        { label: 'Tree density', value: 'treecover' },
-        { label: 'Aboveground Biomass', value: 'agb' },
+        { label: 'Tree height (m)', value: 'chm' },
+        { label: 'Tree cover %', value: 'treecover' },
+        { label: 'AGB (C Ton/Ha)', value: 'agb' },
       ]);
     }
 
-    if (types.includes('landcover')) {
+    if (types.includes('lc')) {
       layers = layers.concat([{ label: 'Land cover', value: 'lc' }]);
     }
   }

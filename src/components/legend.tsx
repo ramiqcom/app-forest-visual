@@ -15,12 +15,16 @@ export default function Legend() {
     max,
     palette,
     type,
+    values,
+    labels,
   }: {
     bands: string[];
     min: number;
     max: number;
     palette: string[];
     type: string;
+    values: number[];
+    labels: string[];
   } = visParam[layer?.value];
 
   switch (type) {
@@ -28,7 +32,7 @@ export default function Legend() {
       const colors = ['red', 'green', 'blue'];
       return (
         <div className='flexible vertical gap'>
-          <div className='title'>{layer?.label}</div>
+          <div>{layer?.label}</div>
           {bands.map((band, key) => (
             <div className='flexible small-gap center1' key={key}>
               <div
@@ -48,7 +52,7 @@ export default function Legend() {
     case 'indices': {
       return (
         <div className='flexible vertical gap center1'>
-          <div className='title'>{layer?.label}</div>
+          <div>{layer?.label}</div>
           <div className='flexible vertical small-gap center1'>
             {max}
             <div
@@ -60,6 +64,28 @@ export default function Legend() {
               }}
             />
             {min}
+          </div>
+        </div>
+      );
+    }
+    case 'category': {
+      return (
+        <div className='flexible vertical gap center1'>
+          <div>{layer?.label}</div>
+          <div className='flexible vertical small-gap'>
+            {values.map((value, key) => (
+              <div className='flexible small-gap' key={key}>
+                <div
+                  style={{
+                    width: '3vh',
+                    height: '1.5vh',
+                    backgroundColor: palette[key],
+                    border: 'thin solid white',
+                  }}
+                />
+                {labels[key]}
+              </div>
+            ))}
           </div>
         </div>
       );

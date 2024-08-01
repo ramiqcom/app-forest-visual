@@ -16,11 +16,56 @@
     "max": 1,
     "palette": ["red", "yellow", "green"]
   },
-  "ndwi": {
-    "param": "expression=%28b2-b4%29%2F%28b2%2Bb4%29&rescale=-1,1&colormap_name=rdbu&nodata=-9999",
+  "chm": {
+    "param": "bidx=1&rescale=0,20&nodata=-9999&colormap_name=ylgn",
     "type": "indices",
-    "min": -1,
-    "max": 1,
-    "palette": ["red", "white", "blue"]
+    "min": 0,
+    "max": 20,
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"]
+  },
+  "treecover": {
+    "param": "bidx=2&rescale=0,80&nodata=-9999&colormap_name=ylgn",
+    "type": "indices",
+    "min": 0,
+    "max": 80,
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"]
+  },
+  "agb": {
+    "param": "bidx=3&rescale=0,100&nodata=-9999&colormap_name=ylgn",
+    "type": "indices",
+    "min": 0,
+    "max": 100,
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"]
+  },
+  "lc": {
+    "param": "nodata=0",
+    "type": "category",
+    "values": [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100],
+    "labels": [
+      "Tree",
+      "Shrubland",
+      "Grassland",
+      "Cropland",
+      "Built-up",
+      "Bareland",
+      "Snow & ice",
+      "Water bodies",
+      "Wetland",
+      "Mangroves",
+      "Moss & lichen"
+    ],
+    "palette": [
+      "forestgreen",
+      "olive",
+      "lightgreen",
+      "gold",
+      "lightcoral",
+      "tan",
+      "azure",
+      "lightskyblue",
+      "teal",
+      "indigo",
+      "greenyellow"
+    ]
   }
 }

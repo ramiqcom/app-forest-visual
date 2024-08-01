@@ -93,7 +93,7 @@ export default function MapCanvas() {
         chm: 'forest',
         treecover: 'forest',
         agb: 'forest',
-        lc: 'landcover',
+        lc: 'lc',
       };
 
       // Get image url
@@ -113,15 +113,13 @@ export default function MapCanvas() {
         map.addSource(rasterId, {
           type: 'raster',
           url: fullUrl,
-          tileSize: 128,
+          tileSize: 256,
         });
         map.addLayer(
           {
             type: 'raster',
             source: rasterId,
             id: rasterId,
-            minzoom: 0,
-            maxzoom: 20,
           },
           map.getSource(plotId) ? plotId : null,
         );
