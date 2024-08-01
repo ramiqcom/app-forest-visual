@@ -55,17 +55,17 @@
       "Moss & lichen"
     ],
     "palette": [
-      "forestgreen",
-      "olive",
-      "lightgreen",
-      "gold",
-      "lightcoral",
-      "tan",
-      "azure",
-      "lightskyblue",
-      "teal",
-      "indigo",
-      "greenyellow"
+      "#006400",
+      "#ffbb22",
+      "#ffff4c",
+      "#f096ff",
+      "#fa0000",
+      "#b4b4b4",
+      "#f0f0f0",
+      "#0064c8",
+      "#0096a0",
+      "#00cf75",
+      "#fae6a0"
     ]
   }
 }
