@@ -1,3 +1,4 @@
+import typeDict from '@/data/layer-type.json';
 import plots from '@/data/location_geojson.json';
 import visParams from '@/data/titiler-vis.json';
 import { loadBboxDb, loadImagedb } from '@/module/database';
@@ -85,16 +86,6 @@ export default function MapCanvas() {
   }) {
     try {
       setStatus({ text: 'Loading image...', status: 'process' });
-      const typeDict = {
-        true_color: 'multispectral',
-        false_color: 'multispectral',
-        ndvi: 'multispectral',
-        ndwi: 'multispectral',
-        chm: 'forest',
-        treecover: 'forest',
-        agb: 'forest',
-        lc: 'lc',
-      };
 
       // Get image url
       const url = await loadImagedb({ location, period, type: typeDict[layer] });

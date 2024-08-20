@@ -1,16 +1,10 @@
 export const dynamic = 'force-dynamic';
 
 import App from '@/components/main';
-import { loadLayersDb, loadLocationsDb, loadPeriodsDb } from '@/module/database';
-import { setTimeout } from 'timers/promises';
+import typeDict from '@/data/layer-type.json';
+import { loadImagedb, loadLayersDb, loadLocationsDb, loadPeriodsDb } from '@/module/database';
 
 export default async function Home() {
-  // Awake the titiler
-  await fetch(`${process.env.TITILER_ENDPOINT}`);
-
-  // Timeout 1 second to wait for the server
-  await setTimeout(1000);
-
   const locations = await loadLocationsDb();
   const location = locations[0];
   const periods = await loadPeriodsDb({ location: location.value as string });
@@ -18,18 +12,31 @@ export default async function Home() {
   const layers = await loadLayersDb({ location: location.value, period: period.value });
   const layer = layers[0];
 
-  return (
-    <>
-      <App
-        defaultStates={{
-          locations,
-          location,
-          periods,
-          period,
-          layers,
-          layer,
-        }}
-      />
-    </>
-  );
+  // Get image url
+  const url = await loadImagedb({
+    location: location.value as string,
+    period: period.value as string,
+    type: typeDict[layer.value] as string,
+  });
+
+  // Awake the titiler
+  const info = await (await fetch(`${process.env.TITILER_ENDPOINT}/cog/info?url=${url}`)).json();
+
+  // Check if titiler is on
+  if (info) {
+    return (
+      <>
+        <App
+          defaultStates={{
+            locations,
+            location,
+            periods,
+            period,
+            layers,
+            layer,
+          }}
+        />
+      </>
+    );
+  }
 }

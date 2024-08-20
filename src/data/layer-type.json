@@ -1,0 +1,10 @@
+{
+  "true_color": "multispectral",
+  "false_color": "multispectral",
+  "ndvi": "multispectral",
+  "ndwi": "multispectral",
+  "chm": "forest",
+  "treecover": "forest",
+  "agb": "forest",
+  "lc": "lc"
+}
