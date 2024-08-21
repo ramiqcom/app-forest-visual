@@ -13,14 +13,11 @@ export default async function Home() {
   const layer = layers[0];
 
   // Get image url
-  const url = await loadImagedb({
+  loadImagedb({
     location: location.value as string,
     period: period.value as string,
     type: typeDict[layer.value] as string,
-  });
-
-  // Awake the titiler
-  await (await fetch(`${process.env.TITILER_ENDPOINT}/cog/info?url=${url}`)).json();
+  }).then((url) => fetch(`${process.env.TITILER_ENDPOINT}/cog/info?url=${url}`));
 
   return (
     <>
