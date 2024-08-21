@@ -20,23 +20,20 @@ export default async function Home() {
   });
 
   // Awake the titiler
-  const info = await (await fetch(`${process.env.TITILER_ENDPOINT}/cog/info?url=${url}`)).json();
+  await (await fetch(`${process.env.TITILER_ENDPOINT}/cog/info?url=${url}`)).json();
 
-  // Check if titiler is on
-  if (info) {
-    return (
-      <>
-        <App
-          defaultStates={{
-            locations,
-            location,
-            periods,
-            period,
-            layers,
-            layer,
-          }}
-        />
-      </>
-    );
-  }
+  return (
+    <>
+      <App
+        defaultStates={{
+          locations,
+          location,
+          periods,
+          period,
+          layers,
+          layer,
+        }}
+      />
+    </>
+  );
 }
