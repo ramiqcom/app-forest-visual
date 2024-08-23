@@ -24,7 +24,7 @@ export default function MapCanvas() {
           sources: {
             basemap: {
               type: 'raster',
-              tiles: ['http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}'],
+              tiles: ['https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}'],
               tileSize: 256,
               attribution: 'Google Satellite Hybrid',
             },
