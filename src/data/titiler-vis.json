@@ -1,78 +1,23 @@
 {
-  "true_color": {
-    "param": "bidx=1&bidx=2&bidx=3&rescale=100,2000&rescale=100,2000&rescale=100,2000&nodata=-9999",
-    "type": "composite",
-    "bands": ["Red", "Green", "Blue"]
-  },
-  "false_color": {
-    "param": "bidx=4&bidx=1&bidx=2&rescale=1000,4000&rescale=100,2000&rescale=100,2000&nodata=-9999",
-    "type": "composite",
-    "bands": ["NIR", "Red", "Green"]
-  },
-  "ndvi": {
-    "param": "expression=%28b4-b1%29%2F%28b4%2Bb1%29&rescale=-1,1&colormap_name=rdylgn&nodata=-9999",
-    "type": "indices",
-    "min": -1,
-    "max": 1,
-    "palette": ["red", "yellow", "green"]
-  },
-  "ndwi": {
-    "param": "expression=%28b2-b4%29%2F%28b2%2Bb4%29&rescale=-1,1&colormap_name=rdbu&nodata=-9999",
-    "type": "indices",
-    "min": -1,
-    "max": 1,
-    "palette": ["red", "white", "blue"]
-  },
-  "chm": {
-    "param": "bidx=1&rescale=0,20&nodata=-9999&colormap_name=ylgn",
-    "type": "indices",
+  "CHM": {
+    "param": "rescale=0,20&nodata=-9999&colormap_name=ylgn",
     "min": 0,
     "max": 20,
-    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"]
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
+    "unit": "Meter"
   },
   "treecover": {
-    "param": "bidx=2&rescale=0,80&nodata=-9999&colormap_name=ylgn",
-    "type": "indices",
-    "min": 0,
-    "max": 80,
-    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"]
-  },
-  "agb": {
-    "param": "bidx=3&rescale=0,100&nodata=-9999&colormap_name=ylgn",
-    "type": "indices",
+    "param": "rescale=0,100&nodata=-9999&colormap_name=ylgn",
     "min": 0,
     "max": 100,
-    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"]
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
+    "unit": "%"
   },
-  "lc": {
-    "param": "nodata=0",
-    "type": "category",
-    "values": [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100],
-    "labels": [
-      "Tree",
-      "Shrubland",
-      "Grassland",
-      "Cropland",
-      "Built-up",
-      "Bareland",
-      "Snow & ice",
-      "Water bodies",
-      "Wetland",
-      "Mangroves",
-      "Moss & lichen"
-    ],
-    "palette": [
-      "#006400",
-      "#ffbb22",
-      "#ffff4c",
-      "#f096ff",
-      "#fa0000",
-      "#b4b4b4",
-      "#f0f0f0",
-      "#0064c8",
-      "#0096a0",
-      "#00cf75",
-      "#fae6a0"
-    ]
+  "AGB": {
+    "param": "rescale=0,200&nodata=-9999&colormap_name=ylgn",
+    "min": 0,
+    "max": 200,
+    "palette": ["lightyellow", "lightgreen", "green", "darkgreen"],
+    "unit": "C Ton/Ha"
   }
 }

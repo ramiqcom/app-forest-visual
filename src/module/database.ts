@@ -4,7 +4,7 @@ import { AuthTypes, Connector, IpAddressTypes } from '@google-cloud/cloud-sql-co
 import { GoogleAuth } from 'google-auth-library';
 import { Pool } from 'pg';
 import { loadPrivateKey } from './server';
-import { Options } from './type';
+import { Collection, Options } from './type';
 
 async function dbClient(): Promise<Pool> {
   const auth = new GoogleAuth({
@@ -31,109 +31,46 @@ async function dbClient(): Promise<Pool> {
   return client;
 }
 
-export async function loadLocationsDb(): Promise<Options> {
-  const client = await dbClient();
-
-  const query = `
-		SELECT id as value, name as label FROM public.location;
-	`;
-
-  const { rows } = await client.query(query);
-
-  return rows as Options;
-}
-
-export async function loadPeriodsDb({ location }: { location: string }): Promise<Options> {
-  const client = await dbClient();
-
-  const query = `
-		SELECT TO_CHAR(date, 'YYYY-MM-DD') as value, TO_CHAR(date, 'YYYY-MM-DD') as label FROM public.pleiades_image
-		WHERE location='${location}'
-    GROUP BY date
-    ORDER BY date DESC;
-	`;
-
-  const { rows } = await client.query(query);
-
-  return rows as Options;
-}
-
-export async function loadLayersDb({ location, period }) {
-  const client = await dbClient();
-
-  const query = `
-		SELECT type FROM public.pleiades_image
-		WHERE (location='${location}' AND date=DATE('${period}'));
-	`;
-
-  const { rows } = await client.query(query);
-
-  // List of layers possible to produce
-  let layers = [];
-
-  // Conditional for layers that exist
-  if (rows.length) {
-    const types: string[] = rows.map((dict: Record<string, any>) => dict.type);
-
-    if (types.includes('multispectral')) {
-      layers = layers.concat([
-        { label: 'True color', value: 'true_color' },
-        { label: 'False color', value: 'false_color' },
-        { label: 'NDVI', value: 'ndvi' },
-        { label: 'NDWI', value: 'ndwi' },
-      ]);
-    }
-
-    if (types.includes('forest')) {
-      layers = layers.concat([
-        { label: 'Tree height (m)', value: 'chm' },
-        { label: 'Tree cover %', value: 'treecover' },
-        { label: 'AGB (C Ton/Ha)', value: 'agb' },
-      ]);
-    }
-
-    if (types.includes('lc')) {
-      layers = layers.concat([{ label: 'Land cover', value: 'lc' }]);
-    }
-  }
-
-  return layers as Options;
-}
-
-export async function loadImagedb({
-  location,
-  period,
-  type,
-}: {
-  location: string;
-  period: string;
-  type: string;
-}) {
-  const client = await dbClient();
-
-  const query = `
-		SELECT url FROM public.pleiades_image
-		WHERE (location='${location}' AND date=DATE('${period}') AND type='${type}');
-	`;
-  const { rows } = await client.query(query);
-
-  return rows[0].url as string;
-}
-
-export async function loadBboxDb({ location }) {
+export async function loadCollectionDB(): Promise<Collection> {
   const client = await dbClient();
 
   const query = `
 		SELECT
-      ST_XMin(geo::geometry) as xmin,
-      ST_YMin(geo::geometry) as ymin,
-      ST_XMax(geo::geometry) as xmax,
-      ST_YMax(geo::geometry) as ymax
-    FROM public.location
-    WHERE id='${location}';
+      code as value,
+      CONCAT(label_region, ' - ', label_country) as label,
+      years,
+      layers,
+      ST_XMin(bounds::geometry) as xmin,
+      ST_YMin(bounds::geometry) as ymin,
+      ST_XMax(bounds::geometry) as xmax,
+      ST_YMax(bounds::geometry) as ymax
+    FROM public.regions
+    WHERE (array_length(years, 1) > 0 AND (array_length(layers, 1) > 0));
 	`;
 
-  const { rows } = await client.query(query);
+  const layersDict = {
+    CHM: 'Canopy Height Model',
+    treecover: 'Tree cover percentage',
+    AGB: 'Above Ground Biomass',
+  };
 
-  return Object.values(rows[0]) as number[];
+  let { rows } = await client.query(query);
+  rows = rows.map((row: Record<string, any>) => {
+    let { value, label, years, layers, xmin, ymin, xmax, ymax } = row;
+
+    const region = { value, label };
+
+    years = years.map(
+      (year: number) => new Object({ value: year, label: String(year) }),
+    ) as Options;
+
+    layers = layers.map(
+      (layer: string) => new Object({ value: layer, label: layersDict[layer] }),
+    ) as Options;
+    const bounds = [xmin, ymin, xmax, ymax];
+
+    return { region, years, layers, bounds };
+  });
+
+  return rows as Collection;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { Context } from '@/module/store';
-import { Option, Options, Status } from '@/module/type';
+import { Collection, Option, Options, Status } from '@/module/type';
 import { useState } from 'react';
 import Legend from './legend';
 import MapCanvas from './map';
@@ -11,45 +11,44 @@ export default function App({
   defaultStates,
 }: {
   defaultStates: {
-    locations: Options;
-    location: Option;
-    periods: Options;
-    period: Option;
+    collection: Collection;
+    regions: Options;
+    region: Option;
+    years: Options;
+    year: Option;
     layers: Options;
     layer: Option;
   };
 }) {
-  const [locations, setLocations] = useState<Options>(defaultStates.locations);
-  const [location, setLocation] = useState<Option>(defaultStates.location);
-  const [periods, setPeriods] = useState<Options>(defaultStates.periods);
-  const [period, setPeriod] = useState<Option>(defaultStates.period);
+  const [regions, setRegions] = useState<Options>(defaultStates.regions);
+  const [region, setRegion] = useState<Option>(defaultStates.region);
+  const [years, setYears] = useState<Options>(defaultStates.years);
+  const [year, setYear] = useState<Option>(defaultStates.year);
   const [layers, setLayers] = useState<Options>(defaultStates.layers);
   const [layer, setLayer] = useState<Option>(defaultStates.layer);
 
-  const [showPlot, setShowPlot] = useState(true);
   const [showImage, setShowImage] = useState(true);
 
   const [status, setStatus] = useState<Status>();
 
   const states = {
-    location,
-    setLocation,
-    periods,
-    setPeriods,
-    period,
-    setPeriod,
+    collection: defaultStates.collection,
+    regions,
+    setRegions,
+    region,
+    setRegion,
+    years,
+    setYears,
+    year,
+    setYear,
     layer,
     setLayer,
-    showPlot,
-    setShowPlot,
+    layers,
+    setLayers,
     showImage,
     setShowImage,
     status,
     setStatus,
-    locations,
-    setLocations,
-    layers,
-    setLayers,
   };
 
   return (
