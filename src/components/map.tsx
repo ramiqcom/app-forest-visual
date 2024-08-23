@@ -1,5 +1,4 @@
 import visParams from '@/data/titiler-vis.json';
-import { loadStadiaKey } from '@/module/server';
 import { Context } from '@/module/store';
 import { LngLatBoundsLike, Map, RasterTileSource } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -18,11 +17,28 @@ export default function MapCanvas() {
     try {
       setStatus({ text: 'Loading map...', status: 'process' });
 
-      const keyStadia = await loadStadiaKey();
-
       const map = new Map({
         container: mapDiv,
-        style: `https://tiles.stadiamaps.com/styles/alidade_satellite.json?api_key=${keyStadia}`,
+        style: {
+          version: 8,
+          sources: {
+            basemap: {
+              type: 'raster',
+              tiles: ['http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}'],
+              tileSize: 256,
+              attribution: 'Google Satellite Hybrid',
+            },
+          },
+          layers: [
+            {
+              id: 'basemap',
+              type: 'raster',
+              source: 'basemap',
+              minzoom: 0,
+              maxzoom: 22,
+            },
+          ],
+        },
         maxZoom: 18,
       });
       setMap(map);
